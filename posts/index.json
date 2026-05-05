@@ -1,5 +1,14 @@
 [
   {
+    "id": "zeppelin-paper-note",
+    "title": "Zeppelin 论文解析：可变长度大模型训练中的负载均衡系统设计",
+    "category": "论文",
+    "tags": ["LLM", "AI Infra", "Distributed Training", "Long Context", "Context Parallelism", "ML Systems", "论文精读"],
+    "date": "2026-05-05",
+    "excerpt": "Zeppelin 面向长且可变长度 sequence 的 LLM 训练，通过层次化 sequence partitioning、attention engine、communication routing 和 remapping layer 同时优化 attention、linear modules 与 NIC 利用率。",
+    "file": "zeppelin-paper-note.md"
+  },
+  {
     "id": "laminar-paper-note",
     "title": "Laminar 论文解析：面向大规模 RL 后训练的异步系统框架",
     "category": "论文",
