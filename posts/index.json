@@ -1,5 +1,14 @@
 [
   {
+    "id": "megascale-moe-paper-note",
+    "title": "MegaScale-MoE 论文解析：生产级大规模 MoE 训练中的通信效率优化",
+    "category": "论文",
+    "tags": ["LLM", "AI Infra", "MoE", "Distributed Training", "Communication Overlap", "ML Systems", "论文精读"],
+    "date": "2026-05-05",
+    "excerpt": "MegaScale-MoE 面向生产级 MoE 训练，通过 SP+EP 并行策略、inter/intra-operator 通信计算重叠和低精度通信压缩，在 1,440 张 Hopper GPU 上训练 352B MoE 达到 1.41M tokens/s。",
+    "file": "megascale-moe-paper-note.md"
+  },
+  {
     "id": "zeppelin-paper-note",
     "title": "Zeppelin 论文解析：可变长度大模型训练中的负载均衡系统设计",
     "category": "论文",
