@@ -1,0 +1,56 @@
+[
+  {
+    "id": "minatoloader-paper-note",
+    "title": "MinatoLoader 论文解析：用样本感知调度缓解数据预处理瓶颈",
+    "category": "论文",
+    "tags": ["AI Infra", "ML Systems", "DataLoader", "PyTorch", "EuroSys", "论文精读"],
+    "date": "2026-05-05",
+    "excerpt": "MinatoLoader 通过识别快慢样本、后台处理慢样本和动态调节 CPU workers，将数据预处理从 GPU 训练瓶颈中解耦出来。",
+    "file": "minatoloader-paper-note.md"
+  },
+  {
+    "id": "rag-paper-note",
+    "title": "RAG 论文阅读笔记：检索增强生成为什么有效",
+    "category": "论文",
+    "tags": ["LLM", "AI Infra", "RAG", "论文精读"],
+    "date": "2026-05-05",
+    "excerpt": "从问题背景、模型结构和实验设计三个角度整理 RAG 的核心贡献。",
+    "file": "rag-paper-note.md"
+  },
+  {
+    "id": "bevfusion-paper-note",
+    "title": "BEVFusion 论文阅读笔记：多传感器自动驾驶感知",
+    "category": "论文",
+    "tags": ["自动驾驶", "多模态", "感知", "论文精读"],
+    "date": "2026-05-02",
+    "excerpt": "从 BEV 表示、相机与 LiDAR 融合方式整理自动驾驶感知论文的阅读框架。",
+    "file": "bevfusion-paper-note.md"
+  },
+  {
+    "id": "leetcode-dp-template",
+    "title": "LeetCode 动态规划题目的记录模板",
+    "category": "LeetCode",
+    "tags": ["DP", "刷题", "模板"],
+    "date": "2026-04-30",
+    "excerpt": "用状态定义、转移方程和边界条件组织刷题笔记。",
+    "file": "leetcode-dp-template.md"
+  },
+  {
+    "id": "python-context-manager",
+    "title": "Python context manager 的实际用途",
+    "category": "Python",
+    "tags": ["Python", "工程实践"],
+    "date": "2026-04-21",
+    "excerpt": "context manager 不只是文件读写语法糖，也适合管理资源生命周期。",
+    "file": "python-context-manager.md"
+  },
+  {
+    "id": "reading-note",
+    "title": "读书笔记：把输入变成可复用的判断",
+    "category": "读书感悟",
+    "tags": ["阅读", "复盘", "生活"],
+    "date": "2026-04-12",
+    "excerpt": "记录不是为了保存原文，而是为了形成之后能调用的判断。",
+    "file": "reading-note.md"
+  }
+]

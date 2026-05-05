@@ -17,4 +17,4 @@ The skill to use is:
 paper-blog-analysis
 ```
 
-Follow the skill's required structure for deep paper analysis and publishable Chinese academic-style blog writing. If the user asks to publish the result into this project, add it as a blog post in the current site data model and keep tags suitable for filtering, such as `LLM`, `自动驾驶`, `AI Infra`, `RAG`, or other paper-specific topics.
+Follow the skill's required structure for deep paper analysis and publishable Chinese academic-style blog writing. If the user asks to publish the result into this project, add the article body as a Markdown file under `posts/`, then register its metadata in `posts/index.json`. Keep tags suitable for filtering, such as `LLM`, `自动驾驶`, `AI Infra`, `RAG`, or other paper-specific topics.
