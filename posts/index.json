@@ -1,5 +1,14 @@
 [
   {
+    "id": "laminar-paper-note",
+    "title": "Laminar 论文解析：面向大规模 RL 后训练的异步系统框架",
+    "category": "论文",
+    "tags": ["LLM", "AI Infra", "RLHF", "RL Post-Training", "Distributed Training", "ML Systems", "论文精读"],
+    "date": "2026-05-05",
+    "excerpt": "Laminar 通过 trajectory-level asynchrony、CPU relay workers 和 dynamic repack mechanism，缓解大规模 LLM RL 后训练中的 rollout 长尾、权重同步和故障恢复瓶颈。",
+    "file": "laminar-paper-note.md"
+  },
+  {
     "id": "flexiq-paper-note",
     "title": "FlexiQ 论文解析：用自适应混合精度量化平衡推理延迟与精度",
     "category": "论文",
