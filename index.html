@@ -109,16 +109,62 @@
           <div class="reader-actions">
             <button class="secondary-link" type="button" data-close-reader>返回列表</button>
             <button class="secondary-link" type="button" data-open-side-nav>打开导航</button>
+            <button class="primary-link" type="button" data-edit-reader>编辑文章</button>
           </div>
           <article class="reader">
-            <div class="reader-meta">
-              <span id="readerCategory"></span>
-              <span id="readerDate"></span>
+            <div id="readerView">
+              <div class="reader-meta">
+                <span id="readerCategory"></span>
+                <span id="readerDate"></span>
+              </div>
+              <h2 id="readerTitle"></h2>
+              <p id="readerExcerpt" class="reader-excerpt"></p>
+              <div id="readerTags" class="tag-row"></div>
+              <div id="readerContent" class="markdown-body"></div>
             </div>
-            <h2 id="readerTitle"></h2>
-            <p id="readerExcerpt" class="reader-excerpt"></p>
-            <div id="readerTags" class="tag-row"></div>
-            <div id="readerContent" class="markdown-body"></div>
+
+            <form id="readerEditForm" class="reader-edit-form is-hidden">
+              <div class="reader-edit-head">
+                <div>
+                  <p class="kicker">Live editor</p>
+                  <h2>编辑文章</h2>
+                </div>
+                <div class="reader-edit-actions">
+                  <button class="secondary-link" type="button" data-cancel-reader-edit>取消</button>
+                  <button class="secondary-link" type="button" data-preview-reader-edit>预览</button>
+                  <button class="primary-link" type="submit">保存修改</button>
+                </div>
+              </div>
+              <div class="form-grid">
+                <label>
+                  标题
+                  <input name="title" required />
+                </label>
+                <label>
+                  分类
+                  <input name="category" required />
+                </label>
+                <label>
+                  标签
+                  <input name="tags" placeholder="LLM, AI Infra, RAG，可用逗号分隔多个标签" />
+                </label>
+                <label>
+                  摘要
+                  <input name="excerpt" required />
+                </label>
+              </div>
+              <div class="reader-edit-grid">
+                <label class="content-field">
+                  Markdown 正文
+                  <textarea name="content" required rows="22" spellcheck="false"></textarea>
+                </label>
+                <section class="reader-edit-preview" aria-label="Markdown 预览">
+                  <div class="reader-edit-preview-title">预览</div>
+                  <div id="readerEditPreview" class="markdown-body"></div>
+                </section>
+              </div>
+              <p id="readerEditHint" class="reader-edit-hint"></p>
+            </form>
           </article>
         </div>
       </section>

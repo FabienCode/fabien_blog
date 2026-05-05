@@ -1,5 +1,6 @@
 const postsIndexPath = "posts/index.json";
 const storageKey = "personal-notes-posts";
+const overridesKey = "personal-notes-post-overrides";
 const retiredPostIds = new Set([
   "rag-paper-note",
   "bevfusion-paper-note",
@@ -8,9 +9,11 @@ const retiredPostIds = new Set([
   "reading-note"
 ]);
 let posts = [];
+let postOverrides = {};
 let activeCategory = "全部";
 let activeTag = "全部";
 let activePostId;
+let isReaderEditing = false;
 
 const categoryFilter = document.querySelector("#categoryFilter");
 const tagFilterGroup = document.querySelector("#tagFilterGroup");
@@ -30,6 +33,10 @@ const readerTitle = document.querySelector("#readerTitle");
 const readerExcerpt = document.querySelector("#readerExcerpt");
 const readerTags = document.querySelector("#readerTags");
 const readerContent = document.querySelector("#readerContent");
+const readerView = document.querySelector("#readerView");
+const readerEditForm = document.querySelector("#readerEditForm");
+const readerEditPreview = document.querySelector("#readerEditPreview");
+const readerEditHint = document.querySelector("#readerEditHint");
 const editorSection = document.querySelector("#editor");
 const totalPosts = document.querySelector("#totalPosts");
 const totalCategories = document.querySelector("#totalCategories");
@@ -89,6 +96,24 @@ function saveLocalPosts() {
   );
 }
 
+function loadPostOverrides() {
+  const saved = localStorage.getItem(overridesKey);
+  if (!saved) {
+    return {};
+  }
+
+  try {
+    const parsed = JSON.parse(saved);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function savePostOverrides() {
+  localStorage.setItem(overridesKey, JSON.stringify(postOverrides));
+}
+
 async function initializePosts() {
   let builtInPosts = [];
 
@@ -101,6 +126,23 @@ async function initializePosts() {
   }
 
   const builtInIds = new Set(builtInPosts.map((post) => post.id));
+  postOverrides = loadPostOverrides();
+  builtInPosts = builtInPosts.map((post) => {
+    const override = postOverrides[post.id];
+    if (!override) {
+      return post;
+    }
+
+    return {
+      ...post,
+      ...override,
+      id: post.id,
+      file: post.file,
+      source: "builtin",
+      overridden: true
+    };
+  });
+
   const localPosts = loadLocalPosts(builtInIds);
   posts = [...localPosts, ...builtInPosts];
   activePostId = posts[0]?.id;
@@ -226,6 +268,8 @@ function renderReader() {
     readerExcerpt.textContent = "还没有加载到可展示的笔记。";
     readerTags.innerHTML = "";
     readerContent.innerHTML = "";
+    readerView.classList.remove("is-hidden");
+    readerEditForm.classList.add("is-hidden");
     return;
   }
 
@@ -237,6 +281,11 @@ function renderReader() {
     .map((tag) => `<button type="button" data-reader-tag="${escapeHTML(tag)}">${escapeHTML(tag)}</button>`)
     .join("");
   readerContent.innerHTML = markdownToHTML(post.content);
+
+  if (!isReaderEditing) {
+    readerView.classList.remove("is-hidden");
+    readerEditForm.classList.add("is-hidden");
+  }
 }
 
 function renderHomeSummary() {
@@ -311,6 +360,7 @@ function render() {
 
 function openPost(id) {
   activePostId = id;
+  isReaderEditing = false;
   render();
   readerPage.classList.remove("is-hidden");
   window.location.hash = `post-${id}`;
@@ -318,6 +368,7 @@ function openPost(id) {
 }
 
 function closeReader() {
+  isReaderEditing = false;
   readerPage.classList.add("is-hidden");
   if (window.location.hash.startsWith("#post-")) {
     history.pushState("", document.title, window.location.pathname + window.location.search);
@@ -339,8 +390,83 @@ function syncReaderRoute() {
 }
 
 function openEditor() {
+  isReaderEditing = false;
+  readerView.classList.remove("is-hidden");
+  readerEditForm.classList.add("is-hidden");
   editorSection.classList.remove("is-hidden");
   editorSection.scrollIntoView({ behavior: "smooth" });
+}
+
+function startReaderEdit() {
+  const post = posts.find((item) => item.id === activePostId);
+  if (!post) {
+    return;
+  }
+
+  isReaderEditing = true;
+  readerEditForm.elements.title.value = post.title;
+  readerEditForm.elements.category.value = post.category;
+  readerEditForm.elements.tags.value = post.tags.join(", ");
+  readerEditForm.elements.excerpt.value = post.excerpt;
+  readerEditForm.elements.content.value = post.content;
+  readerEditHint.textContent =
+    post.source === "builtin"
+      ? "这篇文章来自项目 Markdown 文件。保存后会在当前浏览器生成本地覆盖版本；需要同步到 GitHub 时，再把内容写回 posts/ 文件。"
+      : "这篇文章保存在当前浏览器中，保存后会立即更新本地版本。";
+  updateReaderEditPreview();
+  readerView.classList.add("is-hidden");
+  readerEditForm.classList.remove("is-hidden");
+  readerEditForm.elements.content.focus();
+}
+
+function cancelReaderEdit() {
+  isReaderEditing = false;
+  readerView.classList.remove("is-hidden");
+  readerEditForm.classList.add("is-hidden");
+}
+
+function updateReaderEditPreview() {
+  readerEditPreview.innerHTML = markdownToHTML(readerEditForm.elements.content.value);
+}
+
+function saveReaderEdit(formData) {
+  const post = posts.find((item) => item.id === activePostId);
+  if (!post) {
+    return;
+  }
+
+  const nextPost = {
+    ...post,
+    title: formData.get("title").trim(),
+    category: formData.get("category").trim(),
+    tags: formData
+      .get("tags")
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter(Boolean),
+    excerpt: formData.get("excerpt").trim(),
+    content: formData.get("content").trim(),
+    date: new Date().toISOString().slice(0, 10)
+  };
+
+  posts = posts.map((item) => (item.id === post.id ? nextPost : item));
+
+  if (post.source === "builtin") {
+    postOverrides[post.id] = {
+      title: nextPost.title,
+      category: nextPost.category,
+      tags: nextPost.tags,
+      excerpt: nextPost.excerpt,
+      content: nextPost.content,
+      date: nextPost.date
+    };
+    savePostOverrides();
+  } else {
+    saveLocalPosts();
+  }
+
+  isReaderEditing = false;
+  render();
 }
 
 function closeEditor() {
@@ -545,6 +671,19 @@ document.querySelectorAll("[data-close-side-nav]").forEach((trigger) => {
 
 document.querySelectorAll("[data-close-reader]").forEach((trigger) => {
   trigger.addEventListener("click", closeReader);
+});
+
+document.querySelector("[data-edit-reader]").addEventListener("click", startReaderEdit);
+
+document.querySelector("[data-cancel-reader-edit]").addEventListener("click", cancelReaderEdit);
+
+document.querySelector("[data-preview-reader-edit]").addEventListener("click", updateReaderEditPreview);
+
+readerEditForm.elements.content.addEventListener("input", updateReaderEditPreview);
+
+readerEditForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  saveReaderEdit(new FormData(readerEditForm));
 });
 
 sideDrawer.addEventListener("click", (event) => {
