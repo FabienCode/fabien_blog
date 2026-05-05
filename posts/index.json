@@ -1,5 +1,14 @@
 [
   {
+    "id": "adaptive-kv-caching-paper-note",
+    "title": "eLLM 论文解析：用自适应 KV Caching 同时提升 LLM Serving 吞吐与延迟",
+    "category": "论文",
+    "tags": ["LLM", "AI Infra", "Inference Serving", "KV Cache", "vLLM", "GPU Systems", "EuroSys", "论文精读"],
+    "date": "2026-05-05",
+    "excerpt": "eLLM 通过 token-wise/layer-wise adaptive KV caching、communication-computation overlap 和 kernel fusion，在显存受限但 SM 未充分利用的 LLM serving 场景中提升吞吐并降低 TTFT。",
+    "file": "adaptive-kv-caching-paper-note.md"
+  },
+  {
     "id": "adagen-paper-note",
     "title": "AdaGen 论文解析：面向 LLM 推理服务的工作负载自适应集群调度",
     "category": "论文",
