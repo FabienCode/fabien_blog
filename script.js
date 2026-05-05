@@ -10,6 +10,12 @@ const tagFilterGroup = document.querySelector("#tagFilterGroup");
 const tagFilter = document.querySelector("#tagFilter");
 const postList = document.querySelector("#postList");
 const searchInput = document.querySelector("#searchInput");
+const drawerSearchInput = document.querySelector("#drawerSearchInput");
+const drawerCategoryList = document.querySelector("#drawerCategoryList");
+const drawerTagList = document.querySelector("#drawerTagList");
+const drawerPostList = document.querySelector("#drawerPostList");
+const sideDrawer = document.querySelector("#sideDrawer");
+const readerPage = document.querySelector("#readerPage");
 const postForm = document.querySelector("#postForm");
 const readerCategory = document.querySelector("#readerCategory");
 const readerDate = document.querySelector("#readerDate");
@@ -87,6 +93,7 @@ async function initializePosts() {
   const localPosts = loadLocalPosts(builtInIds);
   posts = [...localPosts, ...builtInPosts];
   activePostId = posts[0]?.id;
+  syncReaderRoute();
   render();
 }
 
@@ -193,8 +200,7 @@ function renderPostList() {
       <p>${escapeHTML(post.excerpt)}</p>
     `;
     button.addEventListener("click", () => {
-      activePostId = post.id;
-      render();
+      openPost(post.id);
     });
     postList.append(button);
   });
@@ -255,6 +261,33 @@ function renderBottomBoard() {
     .join("");
 }
 
+function renderDrawer() {
+  const query = drawerSearchInput.value.trim().toLowerCase();
+  drawerCategoryList.innerHTML = categories()
+    .map((category) => `<button type="button" data-drawer-category="${escapeHTML(category)}">${escapeHTML(category)}</button>`)
+    .join("");
+
+  drawerTagList.innerHTML = [...new Set(posts.flatMap((post) => post.tags))]
+    .map((tag) => `<button type="button" data-drawer-tag="${escapeHTML(tag)}">${escapeHTML(tag)}</button>`)
+    .join("");
+
+  const visiblePosts = posts.filter((post) => {
+    const text = `${post.title} ${post.category} ${post.tags.join(" ")} ${post.excerpt} ${post.content}`.toLowerCase();
+    return text.includes(query);
+  });
+
+  drawerPostList.innerHTML = visiblePosts
+    .map(
+      (post) => `
+        <button type="button" class="${post.id === activePostId ? "active" : ""}" data-drawer-post="${escapeHTML(post.id)}">
+          <strong>${escapeHTML(post.title)}</strong>
+          <span>${escapeHTML(post.category)} · ${formatDate(post.date)}</span>
+        </button>
+      `
+    )
+    .join("");
+}
+
 function render() {
   renderHomeSummary();
   renderBottomBoard();
@@ -262,6 +295,36 @@ function render() {
   renderTags();
   renderPostList();
   renderReader();
+  renderDrawer();
+}
+
+function openPost(id) {
+  activePostId = id;
+  render();
+  readerPage.classList.remove("is-hidden");
+  window.location.hash = `post-${id}`;
+  readerPage.scrollIntoView({ behavior: "smooth" });
+}
+
+function closeReader() {
+  readerPage.classList.add("is-hidden");
+  if (window.location.hash.startsWith("#post-")) {
+    history.pushState("", document.title, window.location.pathname + window.location.search);
+  }
+  document.querySelector("#library").scrollIntoView({ behavior: "smooth" });
+}
+
+function syncReaderRoute() {
+  const hash = decodeURIComponent(window.location.hash);
+  if (!hash.startsWith("#post-")) {
+    return;
+  }
+
+  const id = hash.replace("#post-", "");
+  if (posts.some((post) => post.id === id)) {
+    activePostId = id;
+    readerPage.classList.remove("is-hidden");
+  }
 }
 
 function openEditor() {
@@ -271,6 +334,17 @@ function openEditor() {
 
 function closeEditor() {
   editorSection.classList.add("is-hidden");
+}
+
+function openSideNav() {
+  renderDrawer();
+  sideDrawer.classList.add("is-open");
+  sideDrawer.setAttribute("aria-hidden", "false");
+}
+
+function closeSideNav() {
+  sideDrawer.classList.remove("is-open");
+  sideDrawer.setAttribute("aria-hidden", "true");
 }
 
 function markdownToHTML(markdown) {
@@ -433,6 +507,8 @@ searchInput.addEventListener("input", () => {
   render();
 });
 
+drawerSearchInput.addEventListener("input", renderDrawer);
+
 document.querySelectorAll("[data-open-editor]").forEach((trigger) => {
   trigger.addEventListener("click", (event) => {
     event.preventDefault();
@@ -448,6 +524,47 @@ document.querySelectorAll("[data-close-editor]").forEach((trigger) => {
   });
 });
 
+document.querySelectorAll("[data-open-side-nav]").forEach((trigger) => {
+  trigger.addEventListener("click", openSideNav);
+});
+
+document.querySelectorAll("[data-close-side-nav]").forEach((trigger) => {
+  trigger.addEventListener("click", closeSideNav);
+});
+
+document.querySelectorAll("[data-close-reader]").forEach((trigger) => {
+  trigger.addEventListener("click", closeReader);
+});
+
+sideDrawer.addEventListener("click", (event) => {
+  const categoryButton = event.target.closest("[data-drawer-category]");
+  const tagButton = event.target.closest("[data-drawer-tag]");
+  const postButton = event.target.closest("[data-drawer-post]");
+
+  if (categoryButton) {
+    activeCategory = categoryButton.dataset.drawerCategory;
+    activeTag = "全部";
+    closeSideNav();
+    render();
+    document.querySelector("#library").scrollIntoView({ behavior: "smooth" });
+  }
+
+  if (tagButton) {
+    const tag = tagButton.dataset.drawerTag;
+    const post = posts.find((item) => item.tags.includes(tag));
+    activeCategory = post?.category || "全部";
+    activeTag = tag;
+    closeSideNav();
+    render();
+    document.querySelector("#library").scrollIntoView({ behavior: "smooth" });
+  }
+
+  if (postButton) {
+    closeSideNav();
+    openPost(postButton.dataset.drawerPost);
+  }
+});
+
 readerTags.addEventListener("click", (event) => {
   const button = event.target.closest("[data-reader-tag]");
   if (!button) {
@@ -459,6 +576,7 @@ readerTags.addEventListener("click", (event) => {
   const first = filteredPosts()[0];
   activePostId = first?.id || activePostId;
   render();
+  readerPage.classList.add("is-hidden");
   document.querySelector("#library").scrollIntoView({ behavior: "smooth" });
 });
 
@@ -475,9 +593,7 @@ recentPosts.addEventListener("click", (event) => {
 
   activeCategory = "全部";
   activeTag = "全部";
-  activePostId = post.id;
-  render();
-  document.querySelector("#library").scrollIntoView({ behavior: "smooth" });
+  openPost(post.id);
 });
 
 footerTags.addEventListener("click", (event) => {
@@ -496,6 +612,7 @@ footerTags.addEventListener("click", (event) => {
   activeTag = tag;
   activePostId = post.id;
   render();
+  readerPage.classList.add("is-hidden");
   document.querySelector("#library").scrollIntoView({ behavior: "smooth" });
 });
 
@@ -525,7 +642,9 @@ postForm.addEventListener("submit", (event) => {
   postForm.reset();
   render();
   closeEditor();
-  document.querySelector("#library").scrollIntoView({ behavior: "smooth" });
+  openPost(post.id);
 });
+
+window.addEventListener("hashchange", syncReaderRoute);
 
 initializePosts();

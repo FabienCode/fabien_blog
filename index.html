@@ -10,10 +10,37 @@
     <header class="site-nav">
       <a class="brand" href="#home" aria-label="回到首页">Fabien's Notes</a>
       <nav aria-label="主导航">
-        <a href="#library">文章</a>
+        <a href="#library" data-close-reader>文章</a>
         <a href="#editor" data-open-editor>写笔记</a>
+        <button class="nav-toggle" type="button" data-open-side-nav>导航</button>
       </nav>
     </header>
+
+    <button class="floating-nav-button" type="button" data-open-side-nav aria-label="展开笔记导航">目录</button>
+
+    <aside class="side-drawer" id="sideDrawer" aria-label="笔记导航" aria-hidden="true">
+      <div class="drawer-head">
+        <div>
+          <p class="kicker">Navigate</p>
+          <h2>笔记导航</h2>
+        </div>
+        <button type="button" data-close-side-nav aria-label="关闭导航">关闭</button>
+      </div>
+      <input id="drawerSearchInput" class="search" type="search" placeholder="搜索笔记" />
+      <div class="drawer-section">
+        <span>分类</span>
+        <div id="drawerCategoryList" class="drawer-chip-list"></div>
+      </div>
+      <div class="drawer-section">
+        <span>标签</span>
+        <div id="drawerTagList" class="drawer-chip-list"></div>
+      </div>
+      <div class="drawer-section">
+        <span>文章</span>
+        <div id="drawerPostList" class="drawer-post-list"></div>
+      </div>
+    </aside>
+    <div class="drawer-backdrop" data-close-side-nav></div>
 
     <main id="home">
       <section class="hero" aria-labelledby="hero-title">
@@ -21,7 +48,7 @@
         <h1 id="hero-title">Fabien's Notes</h1>
         <div class="hero-controls" aria-label="首页操作">
           <a class="primary-link" href="#editor" data-open-editor>写笔记</a>
-          <a class="secondary-link" href="#library">浏览笔记</a>
+          <a class="secondary-link" href="#library" data-close-reader>浏览笔记</a>
         </div>
       </section>
 
@@ -59,7 +86,7 @@
       </section>
 
       <section class="workspace" id="library" aria-labelledby="library-title">
-        <aside class="library-panel" aria-label="文章筛选和列表">
+        <div class="library-panel" aria-label="文章筛选和列表">
           <div class="panel-heading">
             <p class="kicker">Library</p>
             <h2 id="library-title">全部笔记</h2>
@@ -74,18 +101,26 @@
             <div id="tagFilter" class="category-filter" aria-label="标签筛选"></div>
           </div>
           <div id="postList" class="post-list"></div>
-        </aside>
+        </div>
+      </section>
 
-        <article class="reader" aria-live="polite">
-          <div class="reader-meta">
-            <span id="readerCategory"></span>
-            <span id="readerDate"></span>
+      <section class="reader-page is-hidden" id="readerPage" aria-live="polite">
+        <div class="reader-shell">
+          <div class="reader-actions">
+            <button class="secondary-link" type="button" data-close-reader>返回列表</button>
+            <button class="secondary-link" type="button" data-open-side-nav>打开导航</button>
           </div>
-          <h2 id="readerTitle"></h2>
-          <p id="readerExcerpt" class="reader-excerpt"></p>
-          <div id="readerTags" class="tag-row"></div>
-          <div id="readerContent" class="markdown-body"></div>
-        </article>
+          <article class="reader">
+            <div class="reader-meta">
+              <span id="readerCategory"></span>
+              <span id="readerDate"></span>
+            </div>
+            <h2 id="readerTitle"></h2>
+            <p id="readerExcerpt" class="reader-excerpt"></p>
+            <div id="readerTags" class="tag-row"></div>
+            <div id="readerContent" class="markdown-body"></div>
+          </article>
+        </div>
       </section>
 
       <section class="editor-section is-hidden" id="editor" aria-labelledby="editor-title">
