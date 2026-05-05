@@ -1,4 +1,5 @@
 image*.png
+.venv/
 assets/hero-knowledge-cover.png
 tmp/
 posts/assets/minatoloader-paper-note/table-1-figure-2.png
