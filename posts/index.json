@@ -1,5 +1,14 @@
 [
   {
+    "id": "adagen-paper-note",
+    "title": "AdaGen 论文解析：面向 LLM 推理服务的工作负载自适应集群调度",
+    "category": "论文",
+    "tags": ["LLM", "AI Infra", "Inference Serving", "Cluster Scheduling", "Distributed Systems", "vLLM", "EuroSys", "论文精读"],
+    "date": "2026-05-05",
+    "excerpt": "AdaGen 面向多实例 LLM 推理服务，提出 compute-layout-aware 集群调度，通过长度/分布感知调度、layout simulation 和 selective distributed execution 提升 TTFT SLO attainment。",
+    "file": "adagen-paper-note.md"
+  },
+  {
     "id": "megascale-moe-paper-note",
     "title": "MegaScale-MoE 论文解析：生产级大规模 MoE 训练中的通信效率优化",
     "category": "论文",
