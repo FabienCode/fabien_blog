@@ -89,7 +89,12 @@
         <div class="library-panel" aria-label="文章筛选和列表">
           <div class="panel-heading">
             <p class="kicker">Library</p>
-            <h2 id="library-title">全部笔记</h2>
+            <h2 id="library-title">精选笔记</h2>
+            <div class="collection-mode" aria-label="首页文章展示方式">
+              <button type="button" class="active" data-collection-mode="recent">最近</button>
+              <button type="button" data-collection-mode="random">随机</button>
+              <button type="button" data-collection-mode="popular">常读</button>
+            </div>
           </div>
           <input id="searchInput" class="search" type="search" placeholder="搜索标题、标签或正文" />
           <div class="filter-group">
@@ -101,6 +106,7 @@
             <div id="tagFilter" class="category-filter" aria-label="标签筛选"></div>
           </div>
           <div id="postList" class="post-list"></div>
+          <button class="library-more" type="button" data-open-side-nav>打开右侧导航浏览全部文章</button>
         </div>
       </section>
 

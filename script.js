@@ -1,6 +1,8 @@
 const postsIndexPath = "posts/index.json";
 const storageKey = "personal-notes-posts";
 const overridesKey = "personal-notes-post-overrides";
+const viewCountsKey = "personal-notes-post-view-counts";
+const collectionLimit = 6;
 const retiredPostIds = new Set([
   "rag-paper-note",
   "bevfusion-paper-note",
@@ -10,9 +12,12 @@ const retiredPostIds = new Set([
 ]);
 let posts = [];
 let postOverrides = {};
+let viewCounts = {};
 let activeCategory = "全部";
 let activeTag = "全部";
 let activePostId;
+let activeCollectionMode = "recent";
+let randomSeed = Date.now();
 let isReaderEditing = false;
 
 const categoryFilter = document.querySelector("#categoryFilter");
@@ -20,6 +25,7 @@ const tagFilterGroup = document.querySelector("#tagFilterGroup");
 const tagFilter = document.querySelector("#tagFilter");
 const postList = document.querySelector("#postList");
 const searchInput = document.querySelector("#searchInput");
+const collectionModeButtons = document.querySelectorAll("[data-collection-mode]");
 const drawerSearchInput = document.querySelector("#drawerSearchInput");
 const drawerCategoryList = document.querySelector("#drawerCategoryList");
 const drawerTagList = document.querySelector("#drawerTagList");
@@ -114,6 +120,33 @@ function savePostOverrides() {
   localStorage.setItem(overridesKey, JSON.stringify(postOverrides));
 }
 
+function loadViewCounts() {
+  const saved = localStorage.getItem(viewCountsKey);
+  if (!saved) {
+    return {};
+  }
+
+  try {
+    const parsed = JSON.parse(saved);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveViewCounts() {
+  localStorage.setItem(viewCountsKey, JSON.stringify(viewCounts));
+}
+
+function recordPostView(id) {
+  if (!id) {
+    return;
+  }
+
+  viewCounts[id] = (Number(viewCounts[id]) || 0) + 1;
+  saveViewCounts();
+}
+
 async function initializePosts() {
   let builtInPosts = [];
 
@@ -127,6 +160,7 @@ async function initializePosts() {
 
   const builtInIds = new Set(builtInPosts.map((post) => post.id));
   postOverrides = loadPostOverrides();
+  viewCounts = loadViewCounts();
   builtInPosts = builtInPosts.map((post) => {
     const override = postOverrides[post.id];
     if (!override) {
@@ -179,6 +213,34 @@ function filteredPosts() {
   });
 }
 
+function displayedPosts() {
+  const visiblePosts = filteredPosts();
+  let sortedPosts = [...visiblePosts];
+
+  if (activeCollectionMode === "popular") {
+    sortedPosts.sort((a, b) => {
+      const viewDiff = (Number(viewCounts[b.id]) || 0) - (Number(viewCounts[a.id]) || 0);
+      if (viewDiff) {
+        return viewDiff;
+      }
+
+      return new Date(b.date) - new Date(a.date);
+    });
+  } else if (activeCollectionMode === "random") {
+    sortedPosts.sort((a, b) => seededRank(a.id) - seededRank(b.id));
+  } else {
+    sortedPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+  }
+
+  return sortedPosts.slice(0, collectionLimit);
+}
+
+function renderCollectionModes() {
+  collectionModeButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.collectionMode === activeCollectionMode);
+  });
+}
+
 function renderCategories() {
   categoryFilter.innerHTML = "";
   categories().forEach((category) => {
@@ -228,7 +290,7 @@ function renderTags() {
 }
 
 function renderPostList() {
-  const visiblePosts = filteredPosts();
+  const visiblePosts = displayedPosts();
   postList.innerHTML = "";
 
   if (!visiblePosts.length) {
@@ -251,6 +313,7 @@ function renderPostList() {
       <span class="post-card-meta">${escapeHTML(post.category)} · ${formatDate(post.date)}</span>
       <h3>${escapeHTML(post.title)}</h3>
       <p>${escapeHTML(post.excerpt)}</p>
+      <span class="post-card-views">阅读 ${Number(viewCounts[post.id]) || 0} 次</span>
     `;
     button.addEventListener("click", () => {
       openPost(post.id);
@@ -351,6 +414,7 @@ function renderDrawer() {
 function render() {
   renderHomeSummary();
   renderBottomBoard();
+  renderCollectionModes();
   renderCategories();
   renderTags();
   renderPostList();
@@ -360,6 +424,7 @@ function render() {
 
 function openPost(id) {
   activePostId = id;
+  recordPostView(id);
   isReaderEditing = false;
   render();
   readerPage.classList.remove("is-hidden");
@@ -638,10 +703,34 @@ function slugify(value) {
   return `${slug || "note"}-${Date.now().toString(36)}`;
 }
 
+function seededRank(value) {
+  const text = `${value}-${randomSeed}`;
+  let hash = 0;
+  for (let index = 0; index < text.length; index += 1) {
+    hash = (hash << 5) - hash + text.charCodeAt(index);
+    hash |= 0;
+  }
+
+  return Math.abs(hash);
+}
+
 searchInput.addEventListener("input", () => {
   const first = filteredPosts()[0];
   activePostId = first?.id || activePostId;
   render();
+});
+
+collectionModeButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    activeCollectionMode = button.dataset.collectionMode;
+    if (activeCollectionMode === "random") {
+      randomSeed = Date.now();
+    }
+
+    const first = displayedPosts()[0];
+    activePostId = first?.id || activePostId;
+    render();
+  });
 });
 
 drawerSearchInput.addEventListener("input", renderDrawer);

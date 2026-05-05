@@ -426,6 +426,31 @@ h3 {
   font-size: 34px;
 }
 
+.collection-mode {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -8px 0 18px;
+}
+
+.collection-mode button {
+  min-height: 34px;
+  padding: 0 13px;
+  border: 1px solid rgba(29, 95, 159, 0.16);
+  border-radius: 999px;
+  background: rgba(243, 247, 252, 0.9);
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.collection-mode button.active {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: #fff;
+}
+
 .search,
 .post-form input,
 .post-form select,
@@ -522,6 +547,28 @@ h3 {
   color: var(--muted);
   font-size: 14px;
   line-height: 1.45;
+}
+
+.post-card-views {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.library-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  margin-top: 18px;
+  padding: 0 16px;
+  border: 1px solid rgba(29, 95, 159, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--blue);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .reader-page {
