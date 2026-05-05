@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fabien's Notes</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-nav">
+      <a class="brand" href="#home" aria-label="回到首页">Fabien's Notes</a>
+      <nav aria-label="主导航">
+        <a href="#library">文章</a>
+        <a href="#editor" data-open-editor>写笔记</a>
+        <a href="#about">关于</a>
+      </nav>
+    </header>
+
+    <main id="home">
+      <section class="hero" aria-labelledby="hero-title">
+        <img src="assets/fabien-hero-cover.png" alt="" aria-hidden="true" />
+        <h1 id="hero-title">Fabien's Notes</h1>
+        <div class="hero-controls" aria-label="首页操作">
+          <a class="primary-link" href="#editor" data-open-editor>写笔记</a>
+          <a class="secondary-link" href="#library">浏览笔记</a>
+        </div>
+      </section>
+
+      <section class="home-summary" aria-label="站点概览">
+        <article>
+          <span id="totalPosts">0</span>
+          <p>已记录笔记</p>
+        </article>
+        <article>
+          <span id="totalCategories">0</span>
+          <p>内容分类</p>
+        </article>
+        <article>
+          <span id="latestDate">-</span>
+          <p>最近更新</p>
+        </article>
+      </section>
+
+      <section class="feature-strip" aria-label="主要内容分类">
+        <article>
+          <span>Research</span>
+          <strong>论文</strong>
+          <p>方法、实验、局限与启发。</p>
+        </article>
+        <article>
+          <span>Code</span>
+          <strong>技术</strong>
+          <p>刷题、Python、工程实践。</p>
+        </article>
+        <article>
+          <span>Life</span>
+          <strong>思考</strong>
+          <p>读书、生活和阶段复盘。</p>
+        </article>
+      </section>
+
+      <section class="workspace" id="library" aria-labelledby="library-title">
+        <aside class="library-panel" aria-label="文章筛选和列表">
+          <div class="panel-heading">
+            <p class="kicker">Library</p>
+            <h2 id="library-title">全部笔记</h2>
+          </div>
+          <input id="searchInput" class="search" type="search" placeholder="搜索标题、标签或正文" />
+          <div class="filter-group">
+            <span>分类</span>
+            <div id="categoryFilter" class="category-filter" aria-label="分类筛选"></div>
+          </div>
+          <div class="filter-group is-hidden" id="tagFilterGroup">
+            <span>标签</span>
+            <div id="tagFilter" class="category-filter" aria-label="标签筛选"></div>
+          </div>
+          <div id="postList" class="post-list"></div>
+        </aside>
+
+        <article class="reader" aria-live="polite">
+          <div class="reader-meta">
+            <span id="readerCategory"></span>
+            <span id="readerDate"></span>
+          </div>
+          <h2 id="readerTitle"></h2>
+          <p id="readerExcerpt" class="reader-excerpt"></p>
+          <div id="readerTags" class="tag-row"></div>
+          <div id="readerContent" class="markdown-body"></div>
+        </article>
+      </section>
+
+      <section class="editor-section is-hidden" id="editor" aria-labelledby="editor-title">
+        <div class="section-copy">
+          <a class="back-link" href="#library" data-close-editor>返回文章列表</a>
+          <p class="kicker">Markdown style writing</p>
+          <h2 id="editor-title">用接近 Markdown 的方式写笔记</h2>
+          <p>
+            支持标题、列表、引用、代码块、行内代码和链接。保存后文章会进入本地浏览器存储，
+            可立即在左侧列表中阅读。
+          </p>
+        </div>
+
+        <form id="postForm" class="post-form">
+          <div class="form-grid">
+            <label>
+              标题
+              <input name="title" required placeholder="例如：RAG 论文阅读笔记" />
+            </label>
+            <label>
+              分类
+              <select name="category" required>
+                <option>论文</option>
+                <option>LeetCode</option>
+                <option>Python</option>
+                <option>计算机技术</option>
+                <option>读书感悟</option>
+                <option>生活记录</option>
+              </select>
+            </label>
+            <label>
+              标签
+              <input name="tags" placeholder="LLM, AI Infra, RAG，可用逗号分隔多个标签" />
+            </label>
+            <label>
+              摘要
+              <input name="excerpt" required placeholder="一句话说明这篇文章的核心内容" />
+            </label>
+          </div>
+          <label class="content-field">
+            正文
+            <textarea name="content" required rows="18" spellcheck="false">## 背景
+这篇笔记想解决什么问题？
+
+## 核心内容
+- 关键观点一
+- 关键观点二
+
+> 写下自己的判断，而不只是复述原文。
+
+```python
+def note():
+    return "keep thinking"
+```
+
+## 我的启发
+后续可以怎样迁移到自己的项目或生活里？</textarea>
+          </label>
+          <button class="primary-link submit-button" type="submit">保存笔记</button>
+        </form>
+      </section>
+
+      <section class="about" id="about" aria-labelledby="about-title">
+        <p class="kicker">About</p>
+        <h2 id="about-title">一个不只服务于论文的个人记录系统。</h2>
+        <p>
+          这个站点适合先作为静态个人博客使用。后续如果需要多设备同步，可以把文章改为 Markdown 文件、
+          接入 GitHub 仓库，或连接 Supabase / Notion 作为内容后台。
+        </p>
+      </section>
+
+      <section class="bottom-board" aria-label="站点索引">
+        <article>
+          <p class="kicker">Focus</p>
+          <h2>记录方向</h2>
+          <ul>
+            <li>论文：LLM、自动驾驶、AI Infra、经典方法复盘。</li>
+            <li>代码：LeetCode、Python、工程工具和系统设计。</li>
+            <li>阅读：书籍、生活观察和阶段性思考。</li>
+          </ul>
+        </article>
+        <article>
+          <p class="kicker">Recent</p>
+          <h2>最近更新</h2>
+          <div id="recentPosts" class="mini-list"></div>
+        </article>
+        <article>
+          <p class="kicker">Tags</p>
+          <h2>常用标签</h2>
+          <div id="footerTags" class="footer-tags"></div>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Fabien's Notes</span>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
