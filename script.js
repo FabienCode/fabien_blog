@@ -1,5 +1,12 @@
 const postsIndexPath = "posts/index.json";
 const storageKey = "personal-notes-posts";
+const retiredPostIds = new Set([
+  "rag-paper-note",
+  "bevfusion-paper-note",
+  "leetcode-dp-template",
+  "python-context-manager",
+  "reading-note"
+]);
 let posts = [];
 let activeCategory = "全部";
 let activeTag = "全部";
@@ -65,7 +72,11 @@ function loadLocalPosts(builtInIds = new Set()) {
       return [];
     }
 
-    return parsed.filter((post) => !builtInIds.has(post.id));
+    const localPosts = parsed.filter((post) => !builtInIds.has(post.id) && !retiredPostIds.has(post.id));
+    if (localPosts.length !== parsed.length) {
+      localStorage.setItem(storageKey, JSON.stringify(localPosts));
+    }
+    return localPosts;
   } catch {
     return [];
   }
