@@ -265,8 +265,7 @@ h3 {
 
 .library-panel,
 .reader,
-.post-form,
-.about {
+.post-form {
   border-radius: 28px;
   background: rgba(255, 255, 255, 0.78);
   box-shadow: var(--shadow);
@@ -509,8 +508,7 @@ h3 {
   font-weight: 700;
 }
 
-.section-copy p:not(.kicker),
-.about p {
+.section-copy p:not(.kicker) {
   color: var(--muted);
   font-size: 19px;
   line-height: 1.65;
@@ -554,20 +552,6 @@ h3 {
 
 .submit-button {
   margin-top: 18px;
-}
-
-.about {
-  margin: 0 6vw 96px;
-  padding: clamp(34px, 6vw, 80px);
-  text-align: center;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.86), rgba(217, 236, 255, 0.68));
-}
-
-.about h2,
-.about p {
-  max-width: 900px;
-  margin-right: auto;
-  margin-left: auto;
 }
 
 .bottom-board {
@@ -706,8 +690,7 @@ h3 {
   .feature-strip article,
   .library-panel,
   .reader,
-  .post-form,
-  .about {
+  .post-form {
     border-radius: 22px;
   }
 }
