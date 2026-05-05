@@ -447,6 +447,28 @@ h3 {
   color: var(--muted);
 }
 
+.markdown-body figure {
+  margin: 30px 0;
+}
+
+.markdown-body figure img {
+  display: block;
+  width: 100%;
+  max-height: 620px;
+  border: 1px solid rgba(203, 217, 234, 0.86);
+  border-radius: 18px;
+  object-fit: contain;
+  background: #fff;
+}
+
+.markdown-body figcaption {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+  text-align: center;
+}
+
 .markdown-body pre {
   overflow: auto;
   padding: 18px;

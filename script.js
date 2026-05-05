@@ -328,6 +328,13 @@ function markdownToHTML(markdown) {
 
     closeQuote();
 
+    const imageMatch = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    if (imageMatch) {
+      closeList();
+      html.push(renderImage(imageMatch[1], imageMatch[2]));
+      return;
+    }
+
     if (line.startsWith("### ")) {
       closeList();
       html.push(`<h3>${parseInline(line.slice(4))}</h3>`);
@@ -375,6 +382,21 @@ function parseInline(value) {
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
 }
 
+function renderImage(alt, src) {
+  const safeAlt = escapeHTML(alt);
+  const safeSrc = escapeAttribute(resolvePostAssetPath(src.trim()));
+  const caption = safeAlt ? `<figcaption>${safeAlt}</figcaption>` : "";
+  return `<figure><img src="${safeSrc}" alt="${safeAlt}" loading="lazy" />${caption}</figure>`;
+}
+
+function resolvePostAssetPath(src) {
+  if (/^(https?:)?\/\//.test(src) || src.startsWith("/") || src.startsWith("data:")) {
+    return src;
+  }
+
+  return `posts/${src.replace(/^\.?\//, "")}`;
+}
+
 function escapeHTML(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -382,6 +404,10 @@ function escapeHTML(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function escapeAttribute(value) {
+  return escapeHTML(value).replaceAll("`", "&#096;");
 }
 
 function formatDate(value) {
