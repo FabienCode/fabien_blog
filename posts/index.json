@@ -1,5 +1,14 @@
 [
   {
+    "id": "flashoverlap-paper-note",
+    "title": "FlashOverlap 论文解析：用 Signaling 与 Reordering 实现高效可适配的计算通信重叠",
+    "category": "论文",
+    "tags": ["LLM", "AI Infra", "Distributed Training", "Communication Overlap", "GPU Systems", "NCCL", "EuroSys", "论文精读"],
+    "date": "2026-05-05",
+    "excerpt": "FlashOverlap 通过 signaling 触发已完成 wave group 的通信，并用 pre/post reordering 让数据满足 NCCL 连续地址要求，在不打断 GEMM main loop 的前提下实现细粒度计算通信重叠。",
+    "file": "flashoverlap-paper-note.md"
+  },
+  {
     "id": "adaptive-kv-caching-paper-note",
     "title": "eLLM 论文解析：用自适应 KV Caching 同时提升 LLM Serving 吞吐与延迟",
     "category": "论文",
