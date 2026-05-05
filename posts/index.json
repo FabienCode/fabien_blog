@@ -1,5 +1,14 @@
 [
   {
+    "id": "flexiq-paper-note",
+    "title": "FlexiQ 论文解析：用自适应混合精度量化平衡推理延迟与精度",
+    "category": "论文",
+    "tags": ["AI Infra", "ML Systems", "Quantization", "Inference", "NPU", "GPU", "EuroSys", "论文精读"],
+    "date": "2026-05-05",
+    "excerpt": "FlexiQ 在 feature channel 维度动态选择 4/8-bit 混合计算，利用 unused bits 降低低比特误差，并在 NPU/GPU 上实现可运行时调节的延迟-精度权衡。",
+    "file": "flexiq-paper-note.md"
+  },
+  {
     "id": "minatoloader-paper-note",
     "title": "MinatoLoader 论文解析：用样本感知调度缓解数据预处理瓶颈",
     "category": "论文",
