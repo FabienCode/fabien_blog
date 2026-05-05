@@ -19,7 +19,15 @@ MinatoLoader: Accelerating Machine Learning Training Through Efficient Data Prep
 
 🖼️ 图 1 是论文的动机图。图 1a 展示了 PyTorch DataLoader 的流水线：多个 CPU worker 并行处理样本，但 batch 创建仍然被慢样本阻塞。图 1b 展示了 3D-UNet 训练中的 CPU/GPU 使用率，GPU 平均利用率只有约 57.4%，CPU 平均使用率约 9.8%。这说明瓶颈不是 GPU 算不动，而是数据没有及时送上来。
 
+![图 1：PyTorch DataLoader 中慢样本导致 batch 创建阻塞，并造成 GPU 利用率不足。](assets/minatoloader-paper-note/figure-1.png)
+
+📊 表 1 展示了论文使用的三类预处理流水线：目标检测、图像分割和语音识别。它的价值在于说明 MinatoLoader 不是只针对某一种图像增强操作，而是在不同模态、不同 transformation 组合下评估数据预处理瓶颈。表中加粗的步骤是耗时更重的 transformation，也是后续快慢样本差异的重要来源。
+
+![表 1：不同工作负载的数据预处理流水线，粗体步骤表示更耗时的处理阶段。](assets/minatoloader-paper-note/table-1.png)
+
 🔍 图 2 进一步说明了为什么“多开 worker”不是根治方案。论文观察到，同一个数据集内部样本的预处理耗时可以从 0.01 秒到 2.2 秒不等，平均约 0.5 秒。更关键的是，这种耗时差异很难用样本大小、变换数量等简单特征准确预测。因此，传统静态调参很难稳定避免慢样本拖累整个 batch。
+
+![图 2：同一 workload 内部样本预处理时间存在明显长尾差异。](assets/minatoloader-paper-note/figure-2.png)
 
 ## 🛠️ 方法详解
 MinatoLoader 是 PyTorch DataLoader 的 drop-in replacement，目标是在单机多 GPU 环境下提高数据供应速度。它的核心由三部分组成：
@@ -30,7 +38,15 @@ MinatoLoader 是 PyTorch DataLoader 的 drop-in replacement，目标是在单机
 
 🖼️ 图 5 是 MinatoLoader 的核心架构图。它把数据加载拆成三类 worker：data loading CPU workers 负责读盘和处理快样本，slow-task CPU workers 在后台恢复被 timeout 中断的慢样本，batch CPU workers 从快慢队列中提前组装 batch。GPU 侧则持续从 batch_queue 获取已经准备好的 batch。
 
+![图 5：MinatoLoader 的高层设计，通过 fast queue、slow queue、temp queue 和 batch queue 解耦预处理与训练。](assets/minatoloader-paper-note/figure-5.png)
+
+🖼️ 图 6 给出了一个更直观的运行例子。慢样本 2 在执行过程中被迁移到 temp queue，不再阻塞当前 batch；快样本则继续被用于构造 ready batch。这个图说明 MinatoLoader 的关键不是“丢掉慢样本”，而是把慢样本从当前训练关键路径中移走，稍后再完整处理并纳入后续 batch。
+
+![图 6：MinatoLoader 预处理流水线示例，慢样本被迁移到 temp queue，快样本继续构造 batch。](assets/minatoloader-paper-note/figure-6.png)
+
 ⚙️ Algorithm 1 给出了 load balancer 的关键逻辑。对一个样本 s 和变换序列 T，MinatoLoader 逐个应用 transformation，同时监控 elapsed time。如果样本在 timeout 内完成，就进入 fast_queue；如果超过 timeout，就记录当前处理到的 transformation index，把部分处理结果放进 temp_queue，再由后台 worker 从中断处继续处理。这个设计避免了一个慢样本阻塞当前 batch，也避免从头重复做已经完成的预处理。
+
+![Algorithm 1：MinatoLoader load balancer 的核心逻辑，包括快慢样本分类、后台恢复和 batch 构建。](assets/minatoloader-paper-note/algorithm-1.png)
 
 📊 timeout 的选择也不是固定拍脑袋。论文先用轻量 profiling 估计样本预处理耗时分布，默认使用 75th percentile 作为阈值。如果 slow sample 被误判过多，系统可以回退到 90th percentile，并在后台持续更新阈值。这使得 MinatoLoader 能适应不同 workload 的数据分布。
 
@@ -45,11 +61,23 @@ MinatoLoader 是 PyTorch DataLoader 的 drop-in replacement，目标是在单机
 
 📊 图 8：比较不同系统在 4×A100 上的 CPU/GPU 使用率。MinatoLoader 将平均 GPU 利用率从 PyTorch 的约 46.4% 提升到约 90.45%，说明其加速来自更连续的数据供应。
 
+![图 8：不同 DataLoader 在 4×A100 上的 CPU/GPU 使用率对比。](assets/minatoloader-paper-note/figure-8.png)
+
 📈 图 9：展示不同 GPU 数量下的训练时间。MinatoLoader 在 A100 与 V100 两类机器上都保持明显优势，说明方法不是只对某个硬件配置有效。
+
+![图 9：不同 GPU 数量下的端到端训练时间，覆盖 A100 与 V100 两类平台。](assets/minatoloader-paper-note/figure-9.png)
 
 📊 图 10：在 230GB 数据集和 80GB 内存限制下比较系统行为。MinatoLoader 仍能在受限内存下保持更短训练时间，说明其收益不完全依赖把数据全部缓存进内存。
 
+![图 10：内存受限场景下的 CPU/GPU 使用率与磁盘读取行为。](assets/minatoloader-paper-note/figure-10.png)
+
+📈 图 11：验证 MinatoLoader 是否影响模型质量。结果显示，在目标检测和图像分割任务中，MinatoLoader 与 PyTorch DataLoader 的精度趋势基本一致，batch 中慢样本数量分布也相近。这支撑了论文的一个重要前提：样本重排不应以牺牲模型训练行为为代价。
+
+![图 11：MinatoLoader 与 PyTorch DataLoader 的准确率趋势和 batch 组成对比。](assets/minatoloader-paper-note/figure-11.png)
+
 📈 图 12：分析慢样本比例变化的影响。当慢样本比例处于 25% 到 75% 的中间区间时，MinatoLoader 优势最明显；当所有样本都同样快或同样慢时，它与传统 DataLoader 更接近。这很好地揭示了该方法的适用边界。
+
+![图 12：不同慢样本比例下的训练时间，显示 MinatoLoader 在快慢样本混合场景收益最大。](assets/minatoloader-paper-note/figure-12.png)
 
 ## 📈 实验结果
 论文使用 MLPerf 中的三个代表性 workload：
@@ -61,6 +89,8 @@ MinatoLoader 是 PyTorch DataLoader 的 drop-in replacement，目标是在单机
 对比系统包括 PyTorch DataLoader、NVIDIA DALI、Pecan 和 MinatoLoader。测试平台包含 4×A100 和 8×V100。
 
 📊 主要结果非常明确：在 4×A100 上，MinatoLoader 相比 PyTorch DataLoader 和 Pecan 最高可将训练时间缩短 7.5×，平均 3.6×；相比 DALI 最高 3×，平均 2.2×。论文还报告 GPU 平均利用率从 PyTorch 的 46.4% 提升到 90.45%。
+
+![图 7：四类 workload 上的吞吐量对比，MinatoLoader 在多数场景下保持最高吞吐。](assets/minatoloader-paper-note/figure-7.png)
 
 这些数字说明两件事。第一，数据预处理确实可能成为昂贵 GPU 的主要浪费来源。第二，把慢样本从 batch 关键路径中移走，比单纯增加 worker 或把部分预处理搬到 GPU 更稳定，因为它直接针对了 head-of-line blocking。
 
