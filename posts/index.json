@@ -1,9 +1,178 @@
 [
   {
+    "id": "uniad-paper-note",
+    "title": "UniAD 论文解析：以规划为导向统一感知、预测与规划",
+    "category": "论文",
+    "tags": [
+      "自动驾驶",
+      "End-to-End Driving",
+      "Planning",
+      "Transformer",
+      "CVPR",
+      "论文精读"
+    ],
+    "date": "2026-05-06",
+    "excerpt": "UniAD 将目标跟踪、地图生成、运动预测、占用预测与规划统一到一个 planning-oriented Transformer 中，用统一 query 接口让前置任务服务最终规划目标。",
+    "file": "uniad-paper-note.md"
+  },
+  {
+    "id": "vad-paper-note",
+    "title": "VAD 论文解析：全矢量化场景表示如何提升端到端规划效率",
+    "category": "论文",
+    "tags": [
+      "自动驾驶",
+      "End-to-End Driving",
+      "Vectorized Representation",
+      "Planning",
+      "ICCV",
+      "论文精读"
+    ],
+    "date": "2026-05-06",
+    "excerpt": "VAD 用 agent motion 与 map elements 的矢量化表示替代稠密 BEV 光栅图，在保持结构信息的同时降低推理开销，并显式约束规划安全。",
+    "file": "vad-paper-note.md"
+  },
+  {
+    "id": "emma-paper-note",
+    "title": "EMMA 论文解析：Waymo 如何把多模态大模型接入端到端驾驶",
+    "category": "论文",
+    "tags": [
+      "自动驾驶",
+      "MLLM",
+      "VLM",
+      "End-to-End Driving",
+      "Waymo",
+      "论文精读"
+    ],
+    "date": "2026-05-06",
+    "excerpt": "EMMA 基于多模态大模型，将摄像头视频、导航与自车状态转成统一语言空间，联合输出轨迹、检测和道路图等驾驶任务结果。",
+    "file": "emma-paper-note.md"
+  },
+  {
+    "id": "roach-paper-note",
+    "title": "Roach 论文解析：用强化学习 Coach 教会端到端城市驾驶",
+    "category": "论文",
+    "tags": [
+      "自动驾驶",
+      "Reinforcement Learning",
+      "Imitation Learning",
+      "CARLA",
+      "ICCV",
+      "论文精读"
+    ],
+    "date": "2026-05-06",
+    "excerpt": "Roach 先用 BEV 特权信息训练 RL 专家，再把专家知识蒸馏给只看摄像头的学生策略，缓解纯视觉端到端驾驶的监督质量问题。",
+    "file": "roach-paper-note.md"
+  },
+  {
+    "id": "think2drive-paper-note",
+    "title": "Think2Drive 论文解析：在潜在世界模型中高效训练自动驾驶 RL",
+    "category": "论文",
+    "tags": [
+      "自动驾驶",
+      "Reinforcement Learning",
+      "World Model",
+      "CARLA",
+      "ECCV",
+      "论文精读"
+    ],
+    "date": "2026-05-06",
+    "excerpt": "Think2Drive 通过潜在世界模型替代慢速仿真交互，让规划器在 latent space 中进行高效试错，提升 CARLA v2 长尾场景训练效率。",
+    "file": "think2drive-paper-note.md"
+  },
+  {
+    "id": "rad-paper-note",
+    "title": "RAD 论文解析：用 3DGS 光真实仿真做端到端驾驶强化学习",
+    "category": "论文",
+    "tags": [
+      "自动驾驶",
+      "Reinforcement Learning",
+      "3DGS",
+      "Simulation",
+      "NeurIPS",
+      "论文精读"
+    ],
+    "date": "2026-05-06",
+    "excerpt": "RAD 使用 3D Gaussian Splatting 构建光真实数字世界，并在闭环仿真中进行强化学习后训练，以缓解 IL 的 causal confusion 和 open-loop gap。",
+    "file": "rad-paper-note.md"
+  },
+  {
+    "id": "diffusiondrive-paper-note",
+    "title": "DiffusionDrive 论文解析：截断扩散如何让生成式轨迹规划实时可用",
+    "category": "论文",
+    "tags": [
+      "自动驾驶",
+      "Diffusion Model",
+      "Planning",
+      "End-to-End Driving",
+      "CVPR",
+      "论文精读"
+    ],
+    "date": "2026-05-06",
+    "excerpt": "DiffusionDrive 将扩散模型用于端到端轨迹规划，并通过从锚定高斯分布开始的截断扩散减少去噪步数，实现多模态规划与实时推理的折中。",
+    "file": "diffusiondrive-paper-note.md"
+  },
+  {
+    "id": "raw2drive-paper-note",
+    "title": "Raw2Drive 论文解析：从原始传感器训练对齐世界模型的端到端 RL",
+    "category": "论文",
+    "tags": [
+      "自动驾驶",
+      "Reinforcement Learning",
+      "World Model",
+      "End-to-End Driving",
+      "NeurIPS",
+      "论文精读"
+    ],
+    "date": "2026-05-06",
+    "excerpt": "Raw2Drive 设计特权世界模型与原始传感器世界模型的双流训练，用 guidance 机制把结构化知识迁移到 camera-based RL 策略。",
+    "file": "raw2drive-paper-note.md"
+  },
+  {
+    "id": "drivevlm-paper-note",
+    "title": "DriveVLM 论文解析：让视觉语言模型参与自动驾驶场景理解与规划",
+    "category": "论文",
+    "tags": [
+      "自动驾驶",
+      "VLM",
+      "MLLM",
+      "Planning",
+      "多模态",
+      "论文精读"
+    ],
+    "date": "2026-05-06",
+    "excerpt": "DriveVLM 用链式思维组织场景描述、场景分析和层级规划，并提出 DriveVLM-Dual 与传统 3D 感知规划模块互补。",
+    "file": "drivevlm-paper-note.md"
+  },
+  {
+    "id": "drivetransformer-paper-note",
+    "title": "DriveTransformer 论文解析：无 BEV、任务并行的可扩展端到端驾驶框架",
+    "category": "论文",
+    "tags": [
+      "自动驾驶",
+      "Transformer",
+      "End-to-End Driving",
+      "BEV-free",
+      "ICLR",
+      "论文精读"
+    ],
+    "date": "2026-05-06",
+    "excerpt": "DriveTransformer 用任务并行、稀疏表示和流式处理替代串行 perception-prediction-planning 与 dense BEV，实现更易扩展的统一 Transformer。",
+    "file": "drivetransformer-paper-note.md"
+  },
+  {
     "id": "flashoverlap-paper-note",
     "title": "FlashOverlap 论文解析：用 Signaling 与 Reordering 实现高效可适配的计算通信重叠",
     "category": "论文",
-    "tags": ["LLM", "AI Infra", "Distributed Training", "Communication Overlap", "GPU Systems", "NCCL", "EuroSys", "论文精读"],
+    "tags": [
+      "LLM",
+      "AI Infra",
+      "Distributed Training",
+      "Communication Overlap",
+      "GPU Systems",
+      "NCCL",
+      "EuroSys",
+      "论文精读"
+    ],
     "date": "2026-05-05",
     "excerpt": "FlashOverlap 通过 signaling 触发已完成 wave group 的通信，并用 pre/post reordering 让数据满足 NCCL 连续地址要求，在不打断 GEMM main loop 的前提下实现细粒度计算通信重叠。",
     "file": "flashoverlap-paper-note.md"
@@ -12,7 +181,16 @@
     "id": "adaptive-kv-caching-paper-note",
     "title": "eLLM 论文解析：用自适应 KV Caching 同时提升 LLM Serving 吞吐与延迟",
     "category": "论文",
-    "tags": ["LLM", "AI Infra", "Inference Serving", "KV Cache", "vLLM", "GPU Systems", "EuroSys", "论文精读"],
+    "tags": [
+      "LLM",
+      "AI Infra",
+      "Inference Serving",
+      "KV Cache",
+      "vLLM",
+      "GPU Systems",
+      "EuroSys",
+      "论文精读"
+    ],
     "date": "2026-05-05",
     "excerpt": "eLLM 通过 token-wise/layer-wise adaptive KV caching、communication-computation overlap 和 kernel fusion，在显存受限但 SM 未充分利用的 LLM serving 场景中提升吞吐并降低 TTFT。",
     "file": "adaptive-kv-caching-paper-note.md"
@@ -21,7 +199,16 @@
     "id": "adagen-paper-note",
     "title": "AdaGen 论文解析：面向 LLM 推理服务的工作负载自适应集群调度",
     "category": "论文",
-    "tags": ["LLM", "AI Infra", "Inference Serving", "Cluster Scheduling", "Distributed Systems", "vLLM", "EuroSys", "论文精读"],
+    "tags": [
+      "LLM",
+      "AI Infra",
+      "Inference Serving",
+      "Cluster Scheduling",
+      "Distributed Systems",
+      "vLLM",
+      "EuroSys",
+      "论文精读"
+    ],
     "date": "2026-05-05",
     "excerpt": "AdaGen 面向多实例 LLM 推理服务，提出 compute-layout-aware 集群调度，通过长度/分布感知调度、layout simulation 和 selective distributed execution 提升 TTFT SLO attainment。",
     "file": "adagen-paper-note.md"
@@ -30,7 +217,15 @@
     "id": "megascale-moe-paper-note",
     "title": "MegaScale-MoE 论文解析：生产级大规模 MoE 训练中的通信效率优化",
     "category": "论文",
-    "tags": ["LLM", "AI Infra", "MoE", "Distributed Training", "Communication Overlap", "ML Systems", "论文精读"],
+    "tags": [
+      "LLM",
+      "AI Infra",
+      "MoE",
+      "Distributed Training",
+      "Communication Overlap",
+      "ML Systems",
+      "论文精读"
+    ],
     "date": "2026-05-05",
     "excerpt": "MegaScale-MoE 面向生产级 MoE 训练，通过 SP+EP 并行策略、inter/intra-operator 通信计算重叠和低精度通信压缩，在 1,440 张 Hopper GPU 上训练 352B MoE 达到 1.41M tokens/s。",
     "file": "megascale-moe-paper-note.md"
@@ -39,7 +234,15 @@
     "id": "zeppelin-paper-note",
     "title": "Zeppelin 论文解析：可变长度大模型训练中的负载均衡系统设计",
     "category": "论文",
-    "tags": ["LLM", "AI Infra", "Distributed Training", "Long Context", "Context Parallelism", "ML Systems", "论文精读"],
+    "tags": [
+      "LLM",
+      "AI Infra",
+      "Distributed Training",
+      "Long Context",
+      "Context Parallelism",
+      "ML Systems",
+      "论文精读"
+    ],
     "date": "2026-05-05",
     "excerpt": "Zeppelin 面向长且可变长度 sequence 的 LLM 训练，通过层次化 sequence partitioning、attention engine、communication routing 和 remapping layer 同时优化 attention、linear modules 与 NIC 利用率。",
     "file": "zeppelin-paper-note.md"
@@ -48,7 +251,15 @@
     "id": "laminar-paper-note",
     "title": "Laminar 论文解析：面向大规模 RL 后训练的异步系统框架",
     "category": "论文",
-    "tags": ["LLM", "AI Infra", "RLHF", "RL Post-Training", "Distributed Training", "ML Systems", "论文精读"],
+    "tags": [
+      "LLM",
+      "AI Infra",
+      "RLHF",
+      "RL Post-Training",
+      "Distributed Training",
+      "ML Systems",
+      "论文精读"
+    ],
     "date": "2026-05-05",
     "excerpt": "Laminar 通过 trajectory-level asynchrony、CPU relay workers 和 dynamic repack mechanism，缓解大规模 LLM RL 后训练中的 rollout 长尾、权重同步和故障恢复瓶颈。",
     "file": "laminar-paper-note.md"
@@ -57,7 +268,16 @@
     "id": "flexiq-paper-note",
     "title": "FlexiQ 论文解析：用自适应混合精度量化平衡推理延迟与精度",
     "category": "论文",
-    "tags": ["AI Infra", "ML Systems", "Quantization", "Inference", "NPU", "GPU", "EuroSys", "论文精读"],
+    "tags": [
+      "AI Infra",
+      "ML Systems",
+      "Quantization",
+      "Inference",
+      "NPU",
+      "GPU",
+      "EuroSys",
+      "论文精读"
+    ],
     "date": "2026-05-05",
     "excerpt": "FlexiQ 在 feature channel 维度动态选择 4/8-bit 混合计算，利用 unused bits 降低低比特误差，并在 NPU/GPU 上实现可运行时调节的延迟-精度权衡。",
     "file": "flexiq-paper-note.md"
@@ -66,7 +286,14 @@
     "id": "minatoloader-paper-note",
     "title": "MinatoLoader 论文解析：用样本感知调度缓解数据预处理瓶颈",
     "category": "论文",
-    "tags": ["AI Infra", "ML Systems", "DataLoader", "PyTorch", "EuroSys", "论文精读"],
+    "tags": [
+      "AI Infra",
+      "ML Systems",
+      "DataLoader",
+      "PyTorch",
+      "EuroSys",
+      "论文精读"
+    ],
     "date": "2026-05-05",
     "excerpt": "MinatoLoader 通过识别快慢样本、后台处理慢样本和动态调节 CPU workers，将数据预处理从 GPU 训练瓶颈中解耦出来。",
     "file": "minatoloader-paper-note.md"
