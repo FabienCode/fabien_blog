@@ -1,5 +1,23 @@
 [
   {
+    "id": "agentic-world-modeling-paper-note",
+    "title": "Agentic World Modeling 论文解析：从预测器到可自我演化的世界模型",
+    "category": "论文",
+    "tags": [
+      "AI Agent",
+      "World Model",
+      "Agentic AI",
+      "Model-Based RL",
+      "AI for Science",
+      "Evaluation",
+      "Survey",
+      "论文精读"
+    ],
+    "date": "2026-05-09",
+    "excerpt": "这篇 survey 提出 levels × laws 框架，用 L1 Predictor、L2 Simulator、L3 Evolver 和 physical/digital/social/scientific 四类法则域统一理解 Agentic World Modeling 的能力、评估与架构路线。",
+    "file": "agentic-world-modeling-paper-note.md"
+  },
+  {
     "id": "uniad-paper-note",
     "title": "UniAD 论文解析：以规划为导向统一感知、预测与规划",
     "category": "论文",
