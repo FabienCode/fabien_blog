@@ -615,10 +615,10 @@ function parseInline(value) {
   });
 
   text = escapeHTML(text)
-    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-    .replace(/__([^_]+)__/g, "<strong>$1</strong>")
-    .replace(/~~([^~]+)~~/g, "<del>$1</del>")
-    .replace(/(^|[^\*])\*([^*]+)\*/g, "$1<em>$2</em>")
+    .replace(/\*\*([\s\S]+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/__([\s\S]+?)__/g, "<strong>$1</strong>")
+    .replace(/~~([\s\S]+?)~~/g, "<del>$1</del>")
+    .replace(/(^|[^\*])\*([^*\n]+)\*/g, "$1<em>$2</em>")
     .replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+&quot;[^&]+&quot;)?\)/g, (_, label, href) => {
       const safeHref = sanitizeHref(href);
       const externalAttrs = /^(https?:)?\/\//.test(safeHref) ? ' target="_blank" rel="noreferrer"' : "";
