@@ -427,97 +427,177 @@ function markdownToHTML(markdown) {
   const lines = markdown.replace(/\r\n/g, "\n").split("\n");
   const html = [];
   let inCode = false;
+  let codeLanguage = "";
   let codeLines = [];
-  let listOpen = false;
-  let quoteLines = [];
+  let listType = "";
+  let paragraphLines = [];
+
+  function closeParagraph() {
+    if (paragraphLines.length) {
+      html.push(`<p>${parseInline(paragraphLines.join(" "))}</p>`);
+      paragraphLines = [];
+    }
+  }
 
   function closeList() {
-    if (listOpen) {
-      html.push("</ul>");
-      listOpen = false;
+    if (listType) {
+      html.push(`</${listType}>`);
+      listType = "";
     }
   }
 
-  function closeQuote() {
-    if (quoteLines.length) {
-      html.push(`<blockquote>${quoteLines.map((line) => `<p>${parseInline(line)}</p>`).join("")}</blockquote>`);
-      quoteLines = [];
-    }
+  function closeOpenBlocks() {
+    closeParagraph();
+    closeList();
   }
 
-  lines.forEach((line) => {
-    if (line.trim().startsWith("```")) {
-      closeList();
-      closeQuote();
+  function isTableStart(index) {
+    const current = lines[index]?.trim();
+    const next = lines[index + 1]?.trim();
+    return Boolean(
+      current &&
+        next &&
+        current.includes("|") &&
+        /^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$/.test(next)
+    );
+  }
+
+  function splitTableRow(row) {
+    return row
+      .trim()
+      .replace(/^\|/, "")
+      .replace(/\|$/, "")
+      .split("|")
+      .map((cell) => cell.trim());
+  }
+
+  function renderTable(startIndex) {
+    const headers = splitTableRow(lines[startIndex]);
+    const alignments = splitTableRow(lines[startIndex + 1]).map((cell) => {
+      if (/^:-+:$/.test(cell)) return "center";
+      if (/-+:$/.test(cell)) return "right";
+      if (/^:-+/.test(cell)) return "left";
+      return "";
+    });
+    const rows = [];
+    let index = startIndex + 2;
+
+    while (index < lines.length && lines[index].trim().includes("|")) {
+      rows.push(splitTableRow(lines[index]));
+      index += 1;
+    }
+
+    const headerHTML = headers
+      .map((header, cellIndex) => {
+        const align = alignments[cellIndex] ? ` style="text-align:${alignments[cellIndex]}"` : "";
+        return `<th${align}>${parseInline(header)}</th>`;
+      })
+      .join("");
+    const rowsHTML = rows
+      .map(
+        (row) =>
+          `<tr>${headers
+            .map((_, cellIndex) => {
+              const align = alignments[cellIndex] ? ` style="text-align:${alignments[cellIndex]}"` : "";
+              return `<td${align}>${parseInline(row[cellIndex] || "")}</td>`;
+            })
+            .join("")}</tr>`
+      )
+      .join("");
+
+    html.push(`<div class="table-scroll"><table><thead><tr>${headerHTML}</tr></thead><tbody>${rowsHTML}</tbody></table></div>`);
+    return index;
+  }
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    const trimmed = line.trim();
+    const fenceMatch = trimmed.match(/^```([A-Za-z0-9_+#.-]*)/);
+    if (fenceMatch) {
+      closeOpenBlocks();
       if (inCode) {
-        html.push(`<pre><code>${escapeHTML(codeLines.join("\n"))}</code></pre>`);
+        const languageClass = codeLanguage ? ` class="language-${escapeAttribute(codeLanguage)}"` : "";
+        html.push(`<pre><code${languageClass}>${escapeHTML(codeLines.join("\n"))}</code></pre>`);
         codeLines = [];
+        codeLanguage = "";
         inCode = false;
       } else {
         inCode = true;
+        codeLanguage = fenceMatch[1] || "";
       }
-      return;
+      continue;
     }
 
     if (inCode) {
       codeLines.push(line);
-      return;
+      continue;
     }
 
-    if (!line.trim()) {
-      closeList();
-      closeQuote();
-      return;
+    if (!trimmed) {
+      closeOpenBlocks();
+      continue;
     }
 
-    if (line.startsWith(">")) {
-      closeList();
-      quoteLines.push(line.replace(/^>\s?/, ""));
-      return;
+    if (/^[-*_]{3,}$/.test(trimmed)) {
+      closeOpenBlocks();
+      html.push("<hr />");
+      continue;
     }
 
-    closeQuote();
-
-    const imageMatch = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    const imageMatch = trimmed.match(/^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]+)")?\)$/);
     if (imageMatch) {
-      closeList();
-      html.push(renderImage(imageMatch[1], imageMatch[2]));
-      return;
+      closeOpenBlocks();
+      html.push(renderImage(imageMatch[1], imageMatch[2], imageMatch[3]));
+      continue;
     }
 
-    if (line.startsWith("### ")) {
-      closeList();
-      html.push(`<h3>${parseInline(line.slice(4))}</h3>`);
-      return;
+    if (isTableStart(index)) {
+      closeOpenBlocks();
+      index = renderTable(index) - 1;
+      continue;
     }
 
-    if (line.startsWith("## ")) {
-      closeList();
-      html.push(`<h2>${parseInline(line.slice(3))}</h2>`);
-      return;
-    }
-
-    if (line.startsWith("# ")) {
-      closeList();
-      html.push(`<h2>${parseInline(line.slice(2))}</h2>`);
-      return;
-    }
-
-    if (/^[-*]\s+/.test(line)) {
-      if (!listOpen) {
-        html.push("<ul>");
-        listOpen = true;
+    if (/^>\s?/.test(line)) {
+      closeOpenBlocks();
+      const quoteLines = [];
+      while (index < lines.length && /^>\s?/.test(lines[index])) {
+        quoteLines.push(lines[index].replace(/^>\s?/, ""));
+        index += 1;
       }
-      html.push(`<li>${parseInline(line.replace(/^[-*]\s+/, ""))}</li>`);
-      return;
+      index -= 1;
+      html.push(`<blockquote>${markdownToHTML(quoteLines.join("\n"))}</blockquote>`);
+      continue;
+    }
+
+    const headingMatch = trimmed.match(/^(#{1,6})\s+(.+)$/);
+    if (headingMatch) {
+      closeOpenBlocks();
+      const level = Math.min(6, Math.max(1, headingMatch[1].length));
+      html.push(`<h${level}>${parseInline(headingMatch[2].replace(/\s+#+$/, ""))}</h${level}>`);
+      continue;
+    }
+
+    const unorderedMatch = line.match(/^\s*[-*+]\s+(.+)$/);
+    const orderedMatch = line.match(/^\s*\d+[.)]\s+(.+)$/);
+    if (unorderedMatch || orderedMatch) {
+      closeParagraph();
+      const nextListType = unorderedMatch ? "ul" : "ol";
+      if (listType && listType !== nextListType) {
+        closeList();
+      }
+      if (!listType) {
+        html.push(`<${nextListType}>`);
+        listType = nextListType;
+      }
+      html.push(`<li>${parseInline((unorderedMatch || orderedMatch)[1])}</li>`);
+      continue;
     }
 
     closeList();
-    html.push(`<p>${parseInline(line)}</p>`);
-  });
+    paragraphLines.push(trimmed);
+  }
 
-  closeList();
-  closeQuote();
+  closeOpenBlocks();
 
   if (inCode) {
     html.push(`<pre><code>${escapeHTML(codeLines.join("\n"))}</code></pre>`);
@@ -527,15 +607,36 @@ function markdownToHTML(markdown) {
 }
 
 function parseInline(value) {
-  return escapeHTML(value)
-    .replace(/`([^`]+)`/g, "<code>$1</code>")
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
+  const codeSpans = [];
+  let text = String(value).replace(/`([^`]+)`/g, (_, code) => {
+    const placeholder = `\u0000CODE${codeSpans.length}\u0000`;
+    codeSpans.push(`<code>${escapeHTML(code)}</code>`);
+    return placeholder;
+  });
+
+  text = escapeHTML(text)
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/__([^_]+)__/g, "<strong>$1</strong>")
+    .replace(/~~([^~]+)~~/g, "<del>$1</del>")
+    .replace(/(^|[^\*])\*([^*]+)\*/g, "$1<em>$2</em>")
+    .replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+&quot;[^&]+&quot;)?\)/g, (_, label, href) => {
+      const safeHref = sanitizeHref(href);
+      const externalAttrs = /^(https?:)?\/\//.test(safeHref) ? ' target="_blank" rel="noreferrer"' : "";
+      return `<a href="${escapeAttribute(safeHref)}"${externalAttrs}>${label}</a>`;
+    });
+
+  codeSpans.forEach((code, index) => {
+    text = text.replace(`\u0000CODE${index}\u0000`, code);
+  });
+
+  return text;
 }
 
-function renderImage(alt, src) {
+function renderImage(alt, src, title = "") {
   const safeAlt = escapeHTML(alt);
   const safeSrc = escapeAttribute(resolvePostAssetPath(src.trim()));
-  const caption = safeAlt ? `<figcaption>${safeAlt}</figcaption>` : "";
+  const captionText = title || alt;
+  const caption = captionText ? `<figcaption>${parseInline(captionText)}</figcaption>` : "";
   return `<figure><img src="${safeSrc}" alt="${safeAlt}" loading="lazy" />${caption}</figure>`;
 }
 
@@ -545,6 +646,19 @@ function resolvePostAssetPath(src) {
   }
 
   return `posts/${src.replace(/^\.?\//, "")}`;
+}
+
+function sanitizeHref(href) {
+  const value = String(href || "").trim();
+  if (/^(https?:|mailto:|#|\/)/i.test(value)) {
+    return value;
+  }
+
+  if (/^(javascript:|data:)/i.test(value)) {
+    return "#";
+  }
+
+  return value;
 }
 
 function escapeHTML(value) {
