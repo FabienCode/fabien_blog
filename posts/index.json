@@ -1,5 +1,23 @@
 [
   {
+    "id": "zai-scaling-pain-note",
+    "title": "Scaling Pain 解读：GLM-5 Coding Agent Serving 的异常输出、KV Cache 竞态与 LayerSplit 优化",
+    "category": "技术",
+    "tags": [
+      "LLM",
+      "AI Infra",
+      "Inference Serving",
+      "Coding Agent",
+      "KV Cache",
+      "Speculative Decoding",
+      "SGLang",
+      "系统工程"
+    ],
+    "date": "2026-05-10",
+    "excerpt": "解读 z.ai 关于 GLM-5 Coding Agent Serving 的 Scaling Pain：异常输出如何通过 Speculative Decoding 指标被识别，PD 分离和 HiCache 中的 KV Cache 竞态如何导致乱码/复读，以及 LayerSplit 如何优化长上下文 Prefill 瓶颈。",
+    "file": "zai-scaling-pain-note.md"
+  },
+  {
     "id": "agentic-world-modeling-paper-note",
     "title": "Agentic World Modeling 论文解析：从预测器到可自我演化的世界模型",
     "category": "论文",
