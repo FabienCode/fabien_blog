@@ -299,7 +299,61 @@ function renderReader() {
   readerTags.innerHTML = post.tags
     .map((tag) => `<button type="button" data-reader-tag="${escapeHTML(tag)}">${escapeHTML(tag)}</button>`)
     .join("");
-  readerContent.innerHTML = markdownToHTML(post.content);
+  readerContent.innerHTML = renderPostBrief(post) + markdownToHTML(post.content);
+}
+
+function renderPostBrief(post) {
+  const headings = extractMarkdownHeadings(post.content)
+    .filter((heading) => heading.level === 2)
+    .slice(0, 4);
+  const keywords = post.tags.slice(0, 6);
+  const titleWords = post.title.split(/[：:]/);
+  const shortTitle = titleWords.at(-1)?.trim() || post.title;
+
+  return `
+    <section class="reader-brief" aria-label="文章速览">
+      <div class="brief-head">
+        <span>${escapeHTML(post.category)}</span>
+        <strong>${escapeHTML(shortTitle)}</strong>
+      </div>
+      <p>${parseInline(post.excerpt)}</p>
+      <div class="brief-grid">
+        <article>
+          <h3>核心摘要</h3>
+          <p>${parseInline(post.excerpt)}</p>
+          <span>${escapeHTML(post.category)} · ${formatDate(post.date)}</span>
+        </article>
+        <article>
+          <h3>阅读重点</h3>
+          <ul>
+            ${
+              headings.length
+                ? headings.map((heading) => `<li>${parseInline(heading.text)}</li>`).join("")
+                : "<li>背景与动机</li><li>方法与实验</li><li>局限与启发</li>"
+            }
+          </ul>
+        </article>
+        <article class="brief-wide">
+          <h3>关键词</h3>
+          <div class="brief-tags">
+            ${keywords.map((tag) => `<span>${escapeHTML(tag)}</span>`).join("")}
+          </div>
+        </article>
+      </div>
+    </section>
+  `;
+}
+
+function extractMarkdownHeadings(markdown) {
+  return markdown
+    .replace(/\r\n/g, "\n")
+    .split("\n")
+    .map((line) => line.trim().match(/^(#{1,6})\s+(.+)$/))
+    .filter(Boolean)
+    .map((match) => ({
+      level: match[1].length,
+      text: match[2].replace(/\s+#+$/, "")
+    }));
 }
 
 function renderHomeSummary() {
@@ -431,7 +485,6 @@ function markdownToHTML(markdown) {
   let codeLines = [];
   let listType = "";
   let paragraphLines = [];
-  let sectionOpen = false;
 
   function closeParagraph() {
     if (paragraphLines.length) {
@@ -450,20 +503,6 @@ function markdownToHTML(markdown) {
   function closeOpenBlocks() {
     closeParagraph();
     closeList();
-  }
-
-  function openSection() {
-    closeSection();
-    html.push('<section class="markdown-section">');
-    sectionOpen = true;
-  }
-
-  function closeSection() {
-    closeOpenBlocks();
-    if (sectionOpen) {
-      html.push("</section>");
-      sectionOpen = false;
-    }
   }
 
   function renderCodeBlock() {
@@ -594,13 +633,7 @@ function markdownToHTML(markdown) {
     const headingMatch = trimmed.match(/^(#{1,6})\s+(.+)$/);
     if (headingMatch) {
       const level = Math.min(6, Math.max(1, headingMatch[1].length));
-      if (level === 1) {
-        closeSection();
-      } else if (level === 2) {
-        openSection();
-      } else {
-        closeOpenBlocks();
-      }
+      closeOpenBlocks();
       html.push(`<h${level}>${parseInline(headingMatch[2].replace(/\s+#+$/, ""))}</h${level}>`);
       continue;
     }
@@ -625,7 +658,7 @@ function markdownToHTML(markdown) {
     paragraphLines.push(trimmed);
   }
 
-  closeSection();
+  closeOpenBlocks();
 
   if (inCode) {
     renderCodeBlock();
