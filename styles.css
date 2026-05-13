@@ -726,6 +726,43 @@ body.is-reading-post .reader-page {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.64);
 }
 
+.reader-brief-summary {
+  background:
+    linear-gradient(135deg, rgba(213, 248, 243, 0.94), rgba(233, 244, 224, 0.78)),
+    #fff;
+}
+
+.brief-summary-grid article {
+  border: 12px solid rgba(205, 244, 238, 0.88);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.brief-summary-grid h3 {
+  font-size: 22px;
+}
+
+.brief-summary-grid blockquote {
+  margin: 14px 0 0;
+  padding: 10px 14px;
+  border-left: 0;
+  border-radius: 12px;
+  background: rgba(205, 244, 238, 0.74);
+  color: #008777;
+  font-weight: 760;
+}
+
+.brief-summary-grid blockquote p {
+  margin: 0;
+  color: inherit;
+}
+
+.brief-method {
+  background:
+    linear-gradient(135deg, rgba(235, 244, 226, 0.94), rgba(255, 255, 255, 0.9)),
+    #fff;
+}
+
 .brief-grid h3 {
   margin: 0 0 12px;
   color: #151f2a;

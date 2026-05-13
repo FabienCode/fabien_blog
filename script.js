@@ -299,10 +299,16 @@ function renderReader() {
   readerTags.innerHTML = post.tags
     .map((tag) => `<button type="button" data-reader-tag="${escapeHTML(tag)}">${escapeHTML(tag)}</button>`)
     .join("");
-  readerContent.innerHTML = renderPostBrief(post) + markdownToHTML(post.content);
+  const openingSummary = extractOpeningSummary(post.content);
+  const bodyContent = openingSummary ? openingSummary.body : post.content;
+  readerContent.innerHTML = renderPostBrief(post, openingSummary) + markdownToHTML(bodyContent);
 }
 
-function renderPostBrief(post) {
+function renderPostBrief(post, openingSummary = null) {
+  if (openingSummary) {
+    return renderOpeningSummaryBrief(openingSummary);
+  }
+
   const headings = extractMarkdownHeadings(post.content)
     .filter((heading) => heading.level === 2)
     .slice(0, 4);
@@ -338,6 +344,90 @@ function renderPostBrief(post) {
           <div class="brief-tags">
             ${keywords.map((tag) => `<span>${escapeHTML(tag)}</span>`).join("")}
           </div>
+        </article>
+      </div>
+    </section>
+  `;
+}
+
+function extractOpeningSummary(markdown) {
+  const lines = markdown.replace(/\r\n/g, "\n").split("\n");
+  const start = lines.findIndex((line) => /^##\s+.*核心洞察与挑战/.test(line.trim()));
+  if (start === -1) {
+    return null;
+  }
+
+  const intro = lines.findIndex((line, index) => index > start && /^##\s+.*引言/.test(line.trim()));
+  const end = intro === -1 ? lines.length : intro;
+  const summaryLines = lines.slice(start, end);
+  const body = [...lines.slice(0, start), ...lines.slice(end)].join("\n").trim();
+  const sections = {
+    coreProblem: [],
+    priorLimits: [],
+    motivation: [],
+    method: []
+  };
+  let activeSection = "";
+
+  summaryLines.forEach((line) => {
+    const trimmed = line.trim();
+    if (/^##\s+.*核心洞察与挑战/.test(trimmed)) {
+      return;
+    }
+    if (/^###\s+核心问题/.test(trimmed)) {
+      activeSection = "coreProblem";
+      return;
+    }
+    if (/^###\s+传统方案局限/.test(trimmed)) {
+      activeSection = "priorLimits";
+      return;
+    }
+    if (/^##\s+研究动机/.test(trimmed)) {
+      activeSection = "motivation";
+      return;
+    }
+    if (/^##\s+方法论/.test(trimmed)) {
+      activeSection = "method";
+      return;
+    }
+    if (activeSection) {
+      sections[activeSection].push(line);
+    }
+  });
+
+  if (!Object.values(sections).some((sectionLines) => sectionLines.join("").trim())) {
+    return null;
+  }
+
+  return { sections, body };
+}
+
+function renderOpeningSummaryBrief(openingSummary) {
+  const { sections } = openingSummary;
+  const renderSection = (sectionLines) => markdownToHTML(sectionLines.join("\n").trim());
+
+  return `
+    <section class="reader-brief reader-brief-summary" aria-label="论文开篇总结">
+      <div class="brief-head">
+        <span>Paper Brief</span>
+        <strong>核心洞察与挑战</strong>
+      </div>
+      <div class="brief-grid brief-summary-grid">
+        <article>
+          <h3>核心问题</h3>
+          ${renderSection(sections.coreProblem)}
+        </article>
+        <article>
+          <h3>传统方案局限</h3>
+          ${renderSection(sections.priorLimits)}
+        </article>
+        <article class="brief-wide">
+          <h3>研究动机</h3>
+          ${renderSection(sections.motivation)}
+        </article>
+        <article class="brief-wide brief-method">
+          <h3>方法论（主要模块简介）</h3>
+          ${renderSection(sections.method)}
         </article>
       </div>
     </section>
