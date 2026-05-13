@@ -1,5 +1,23 @@
 [
   {
+    "id": "xwam-paper-note",
+    "title": "Unified 4D World Action Modeling from Video Priors with Asynchronous Denoising 论文解析：X-WAM 如何把动作决策、视频生成与 4D 重建放进同一个世界模型",
+    "category": "论文",
+    "tags": [
+      "Embodied AI",
+      "Robotics",
+      "World Model",
+      "World Action Model",
+      "Diffusion Model",
+      "4D Reconstruction",
+      "Video Generation",
+      "论文精读"
+    ],
+    "date": "2026-05-13",
+    "excerpt": "X-WAM 将机器人动作决策、未来多视角 RGB-D 视频生成和 4D 空间重建统一到一个视频扩散世界模型中，通过轻量 depth branch 与 Asynchronous Noise Sampling 同时兼顾几何一致性、动作实时性和生成质量。",
+    "file": "xwam-paper-note.md"
+  },
+  {
     "id": "zai-scaling-pain-note",
     "title": "Scaling Pain 解读：GLM-5 Coding Agent Serving 的异常输出、KV Cache 竞态与 LayerSplit 优化",
     "category": "技术",
