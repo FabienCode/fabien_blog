@@ -19,6 +19,22 @@ paper-blog-analysis
 
 Follow the skill's required structure for deep paper analysis and publishable Chinese academic-style blog writing. If the user asks to publish the result into this project, add the article body as a Markdown file under `posts/`, then register its metadata in `posts/index.json`. When selected paper figures/tables help the article, save them under `posts/assets/<post-id>/` and embed them in Markdown with relative paths such as `![图 1：caption](assets/<post-id>/figure-1.png)`. Do not add a mandatory standalone figure-by-figure interpretation section unless the user asks for it. Keep tags suitable for filtering, such as `LLM`, `自动驾驶`, `AI Infra`, `RAG`, or other paper-specific topics.
 
+For newly published paper blogs, the top summary section must match the current site style and use this Markdown-compatible structure before the long-form explanation:
+
+```markdown
+## ✦ 核心洞察与挑战
+
+### 核心问题
+
+### 传统方案局限
+
+## 研究动机
+
+## 方法论（主要模块简介）
+```
+
+Keep this opening section concise and card-friendly. Put detailed experiments, figures, and numeric analysis in later sections unless a key number is necessary for the opening thesis.
+
 Before publishing a paper blog, check `posts/index.json` and existing Markdown files under `posts/` for the same paper title, DOI, arXiv ID, or obvious slug match. If the paper has already been published, remind the user that it is already published and do not publish a duplicate. Only update, rewrite, or replace the existing post when the user explicitly asks to update, rewrite, republish, or overwrite it.
 
 ## Python Environment
