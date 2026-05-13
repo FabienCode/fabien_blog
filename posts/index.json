@@ -1,5 +1,24 @@
 [
   {
+    "id": "sensenova-u1-paper-note",
+    "title": "SenseNova-U1 论文解析：原生统一多模态理解与生成范式（NEO-unify Architecture）",
+    "category": "论文",
+    "tags": [
+      "多模态",
+      "LLM",
+      "VLM",
+      "图像生成",
+      "MoT",
+      "原生多模态",
+      "NEO-unify",
+      "SenseNova",
+      "论文精读"
+    ],
+    "date": "2026-05-13",
+    "excerpt": "SenseNova-U1 基于 NEO-unify 框架提出原生统一多模态范式，让理解和生成作为同一过程的两个协同视图共同进化，用极轻量视觉接口（无预训练VE/VAE）和 Native MoT 主干，在 32× 压缩比下同时实现顶级理解和生成水平。",
+    "file": "sensenova-u1-paper-note.md"
+  },
+  {
     "id": "xwam-paper-note",
     "title": "Unified 4D World Action Modeling from Video Priors with Asynchronous Denoising 论文解析：X-WAM 如何把动作决策、视频生成与 4D 重建放进同一个世界模型",
     "category": "论文",
