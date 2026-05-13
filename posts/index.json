@@ -1,5 +1,23 @@
 [
   {
+    "id": "rubricem-paper-note",
+    "title": "RubricEM 论文解析：用 Rubric 引导策略分解超越可验证奖励的 Meta-RL 框架",
+    "category": "论文",
+    "tags": [
+      "LLM",
+      "AI Agent",
+      "RL",
+      "Meta-RL",
+      "Deep Research",
+      "Rubric",
+      "Credit Assignment",
+      "论文精读"
+    ],
+    "date": "2026-05-13",
+    "excerpt": "RubricEM 提出用 Rubric 作为贯穿策略执行、评委反馈和智能体记忆的共享接口，通过 Stage-Structured GRPO 实现过程级信用分配，通过 Reflection Meta-Policy 将评判后的轨迹蒸馏为可复用经验，在 1400 步 RL 内让 8B 模型在深度研究任务上逼近 GPT-5 + Search 水平。",
+    "file": "rubricem-paper-note.md"
+  },
+  {
     "id": "sensenova-u1-paper-note",
     "title": "SenseNova-U1 论文解析：原生统一多模态理解与生成范式（NEO-unify Architecture）",
     "category": "论文",
