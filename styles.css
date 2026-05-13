@@ -993,6 +993,29 @@ body.is-reading-post .reader-page {
   background: transparent;
 }
 
+.markdown-body .math-card {
+  margin: 28px 0;
+  padding: 18px 20px;
+  overflow-x: auto;
+  border: 1px solid rgba(203, 217, 234, 0.86);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(246, 249, 252, 0.98), rgba(237, 248, 244, 0.82)),
+    #fff;
+  color: #172433;
+  font-size: 17px;
+  line-height: 1.65;
+  box-shadow: 0 14px 30px rgba(17, 92, 100, 0.08);
+  -webkit-overflow-scrolling: touch;
+}
+
+.markdown-body mjx-container {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 0;
+}
+
 .markdown-body a {
   color: var(--blue);
   text-decoration: underline;

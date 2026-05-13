@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fabien's Notes</title>
-    <link rel="stylesheet" href="styles.css?v=20260513-summary-cards" />
+    <link rel="stylesheet" href="styles.css?v=20260513-latex" />
   </head>
   <body>
     <header class="site-nav">
@@ -216,6 +216,19 @@ def note():
       <span>Fabien's Notes</span>
     </footer>
 
-    <script src="script.js?v=20260513-summary-cards"></script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]],
+          displayMath: [["$$", "$$"], ["\\[", "\\]"]],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"]
+        }
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    <script defer src="script.js?v=20260513-latex"></script>
   </body>
 </html>

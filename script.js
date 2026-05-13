@@ -302,6 +302,7 @@ function renderReader() {
   const openingSummary = extractOpeningSummary(post.content);
   const bodyContent = openingSummary ? openingSummary.body : post.content;
   readerContent.innerHTML = renderPostBrief(post, openingSummary) + markdownToHTML(bodyContent);
+  typesetMath(readerContent);
 }
 
 function renderPostBrief(post, openingSummary = null) {
@@ -677,6 +678,10 @@ function markdownToHTML(markdown) {
     return index;
   }
 
+  function renderMathBlock(math) {
+    return `<div class="math-card">\\[${escapeHTML(math.trim())}\\]</div>`;
+  }
+
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index];
     const trimmed = line.trim();
@@ -706,6 +711,26 @@ function markdownToHTML(markdown) {
     if (/^[-*_]{3,}$/.test(trimmed)) {
       closeOpenBlocks();
       html.push("<hr />");
+      continue;
+    }
+
+    if (trimmed === "$$" || trimmed === "\\[") {
+      closeOpenBlocks();
+      const endDelimiter = trimmed === "$$" ? "$$" : "\\]";
+      const mathLines = [];
+      index += 1;
+      while (index < lines.length && lines[index].trim() !== endDelimiter) {
+        mathLines.push(lines[index]);
+        index += 1;
+      }
+      html.push(renderMathBlock(mathLines.join("\n")));
+      continue;
+    }
+
+    const singleLineDisplayMath = trimmed.match(/^\$\$([\s\S]+)\$\$$/) || trimmed.match(/^\\\[([\s\S]+)\\\]$/);
+    if (singleLineDisplayMath) {
+      closeOpenBlocks();
+      html.push(renderMathBlock(singleLineDisplayMath[1]));
       continue;
     }
 
@@ -773,11 +798,24 @@ function markdownToHTML(markdown) {
 
 function parseInline(value) {
   const codeSpans = [];
+  const mathSpans = [];
   let text = String(value).replace(/`([^`]+)`/g, (_, code) => {
     const placeholder = `\u0000CODE${codeSpans.length}\u0000`;
     codeSpans.push(`<code>${escapeHTML(code)}</code>`);
     return placeholder;
   });
+
+  text = text
+    .replace(/\\\(([\s\S]+?)\\\)/g, (_, math) => {
+      const placeholder = `\u0000MATH${mathSpans.length}\u0000`;
+      mathSpans.push(`\\(${escapeHTML(math)}\\)`);
+      return placeholder;
+    })
+    .replace(/\$((?:\\.|[^\n$])+?)\$/g, (_, math) => {
+      const placeholder = `\u0000MATH${mathSpans.length}\u0000`;
+      mathSpans.push(`\\(${escapeHTML(math)}\\)`);
+      return placeholder;
+    });
 
   text = escapeHTML(text)
     .replace(/\*\*([\s\S]+?)\*\*/g, "<strong>$1</strong>")
@@ -793,8 +831,21 @@ function parseInline(value) {
   codeSpans.forEach((code, index) => {
     text = text.replace(`\u0000CODE${index}\u0000`, code);
   });
+  mathSpans.forEach((math, index) => {
+    text = text.replace(`\u0000MATH${index}\u0000`, math);
+  });
 
   return text;
+}
+
+function typesetMath(element = document.body) {
+  if (!window.MathJax?.typesetPromise) {
+    return;
+  }
+
+  window.MathJax.typesetPromise([element]).catch((error) => {
+    console.warn("MathJax typeset failed", error);
+  });
 }
 
 function renderImage(alt, src, title = "") {
