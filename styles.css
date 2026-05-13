@@ -237,7 +237,7 @@ body:has(.side-drawer.is-open) .drawer-backdrop {
   height: clamp(210px, 26vw, 360px);
   border-radius: 28px;
   object-fit: cover;
-  object-position: center 42%;
+  object-position: center 34%;
 }
 
 .kicker {
@@ -1214,7 +1214,7 @@ body.is-reading-post .reader-page {
   .hero img {
     height: 170px;
     border-radius: 20px;
-    object-position: center 38%;
+    object-position: center 30%;
   }
 
   .hero-controls {
