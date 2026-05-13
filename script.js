@@ -431,6 +431,7 @@ function markdownToHTML(markdown) {
   let codeLines = [];
   let listType = "";
   let paragraphLines = [];
+  let sectionOpen = false;
 
   function closeParagraph() {
     if (paragraphLines.length) {
@@ -449,6 +450,30 @@ function markdownToHTML(markdown) {
   function closeOpenBlocks() {
     closeParagraph();
     closeList();
+  }
+
+  function openSection() {
+    closeSection();
+    html.push('<section class="markdown-section">');
+    sectionOpen = true;
+  }
+
+  function closeSection() {
+    closeOpenBlocks();
+    if (sectionOpen) {
+      html.push("</section>");
+      sectionOpen = false;
+    }
+  }
+
+  function renderCodeBlock() {
+    const languageClass = codeLanguage ? ` class="language-${escapeAttribute(codeLanguage)}"` : "";
+    const languageLabel = escapeAttribute(codeLanguage || "code");
+    html.push(
+      `<div class="code-card" data-language="${languageLabel}"><pre><code${languageClass}>${escapeHTML(codeLines.join("\n"))}</code></pre></div>`
+    );
+    codeLines = [];
+    codeLanguage = "";
   }
 
   function isTableStart(index) {
@@ -516,10 +541,7 @@ function markdownToHTML(markdown) {
     if (fenceMatch) {
       closeOpenBlocks();
       if (inCode) {
-        const languageClass = codeLanguage ? ` class="language-${escapeAttribute(codeLanguage)}"` : "";
-        html.push(`<pre><code${languageClass}>${escapeHTML(codeLines.join("\n"))}</code></pre>`);
-        codeLines = [];
-        codeLanguage = "";
+        renderCodeBlock();
         inCode = false;
       } else {
         inCode = true;
@@ -571,8 +593,14 @@ function markdownToHTML(markdown) {
 
     const headingMatch = trimmed.match(/^(#{1,6})\s+(.+)$/);
     if (headingMatch) {
-      closeOpenBlocks();
       const level = Math.min(6, Math.max(1, headingMatch[1].length));
+      if (level === 1) {
+        closeSection();
+      } else if (level === 2) {
+        openSection();
+      } else {
+        closeOpenBlocks();
+      }
       html.push(`<h${level}>${parseInline(headingMatch[2].replace(/\s+#+$/, ""))}</h${level}>`);
       continue;
     }
@@ -597,10 +625,10 @@ function markdownToHTML(markdown) {
     paragraphLines.push(trimmed);
   }
 
-  closeOpenBlocks();
+  closeSection();
 
   if (inCode) {
-    html.push(`<pre><code>${escapeHTML(codeLines.join("\n"))}</code></pre>`);
+    renderCodeBlock();
   }
 
   return html.join("");

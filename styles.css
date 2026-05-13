@@ -593,11 +593,7 @@ h3 {
 
 .reader {
   min-height: 720px;
-  padding: clamp(30px, 5vw, 72px);
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.82);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(18px);
+  padding: clamp(16px, 3vw, 34px) 0;
 }
 
 .reader-meta {
@@ -637,10 +633,34 @@ h3 {
 }
 
 .markdown-body {
-  max-width: 860px;
+  display: grid;
+  gap: 22px;
+  max-width: 920px;
   font-size: 18px;
   line-height: 1.8;
   overflow-wrap: anywhere;
+}
+
+.markdown-section {
+  position: relative;
+  padding: clamp(22px, 3.2vw, 38px);
+  border: 1px solid rgba(203, 217, 234, 0.72);
+  border-radius: 22px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(247, 251, 255, 0.9)),
+    #fff;
+  box-shadow: 0 18px 42px rgba(30, 69, 112, 0.1);
+}
+
+.markdown-section::before {
+  content: "";
+  position: absolute;
+  top: 24px;
+  left: 0;
+  width: 4px;
+  height: 42px;
+  border-radius: 0 999px 999px 0;
+  background: linear-gradient(180deg, var(--blue), #7aaad8);
 }
 
 .markdown-body h1 {
@@ -657,13 +677,15 @@ h3 {
 }
 
 .markdown-body h2 {
-  margin: 42px 0 14px;
-  font-size: 32px;
+  margin: 0 0 18px;
+  color: #152844;
+  font-size: clamp(25px, 3vw, 32px);
   line-height: 1.28;
 }
 
 .markdown-body h3 {
-  margin: 34px 0 12px;
+  margin: 30px 0 12px;
+  color: #203755;
   font-size: 24px;
   line-height: 1.36;
 }
@@ -683,6 +705,15 @@ h3 {
 
 .markdown-body p {
   margin: 0 0 18px;
+}
+
+.markdown-body p:last-child,
+.markdown-body ul:last-child,
+.markdown-body ol:last-child,
+.markdown-body figure:last-child,
+.markdown-body .table-scroll:last-child,
+.markdown-body .code-card:last-child {
+  margin-bottom: 0;
 }
 
 .markdown-body strong {
@@ -716,11 +747,12 @@ h3 {
 
 .markdown-body blockquote {
   margin: 28px 0;
-  padding: 12px 18px 12px 20px;
-  border-left: 4px solid var(--line);
-  border-radius: 0 12px 12px 0;
-  background: rgba(243, 247, 252, 0.72);
-  color: var(--muted);
+  padding: 16px 18px 16px 20px;
+  border: 1px solid rgba(29, 95, 159, 0.14);
+  border-left: 4px solid rgba(29, 95, 159, 0.5);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(237, 246, 255, 0.86), rgba(255, 255, 255, 0.92));
+  color: #40516a;
 }
 
 .markdown-body blockquote p:last-child {
@@ -729,14 +761,18 @@ h3 {
 
 .markdown-body figure {
   margin: 34px 0;
+  padding: 14px;
+  border: 1px solid rgba(203, 217, 234, 0.76);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.86);
 }
 
 .markdown-body figure img {
   display: block;
   width: 100%;
   max-height: 620px;
-  border: 1px solid rgba(203, 217, 234, 0.86);
-  border-radius: 18px;
+  border: 1px solid rgba(203, 217, 234, 0.72);
+  border-radius: 12px;
   object-fit: contain;
   background: #fff;
 }
@@ -749,11 +785,33 @@ h3 {
   text-align: center;
 }
 
+.markdown-body .code-card {
+  position: relative;
+  margin: 28px 0;
+  overflow: hidden;
+  border: 1px solid rgba(20, 42, 70, 0.12);
+  border-radius: 18px;
+  background: #111827;
+  box-shadow: 0 16px 36px rgba(17, 24, 39, 0.12);
+}
+
+.markdown-body .code-card::before {
+  content: attr(data-language);
+  display: block;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: #a9b6c8;
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
 .markdown-body pre {
   overflow: auto;
+  margin: 0;
   padding: 18px;
-  border-radius: 18px;
-  background: var(--code);
+  background: transparent;
+  color: #e5edf7;
   line-height: 1.55;
   white-space: pre;
   -webkit-overflow-scrolling: touch;
@@ -769,6 +827,7 @@ h3 {
 
 .markdown-body pre code {
   padding: 0;
+  color: inherit;
   background: transparent;
 }
 
@@ -791,8 +850,9 @@ h3 {
   margin: 28px 0;
   overflow-x: auto;
   border: 1px solid rgba(203, 217, 234, 0.86);
-  border-radius: 14px;
+  border-radius: 18px;
   background: #fff;
+  box-shadow: 0 14px 30px rgba(30, 69, 112, 0.08);
   -webkit-overflow-scrolling: touch;
 }
 
@@ -1042,7 +1102,6 @@ h3 {
 
   .feature-strip article,
   .library-panel,
-  .reader,
   .post-form {
     border-radius: 22px;
   }
@@ -1055,7 +1114,11 @@ h3 {
   }
 
   .reader {
-    padding: 24px;
+    padding: 0;
+  }
+
+  .markdown-section {
+    border-radius: 18px;
   }
 
   .side-drawer {
