@@ -11,35 +11,35 @@
 
 ### 核心问题
 
-- **二维世界模型不够用**：已有统一 World Action Model 多停留在 2D pixel-space，能预测未来图像和动作，但缺少显式 3D 几何约束。
-- **动作快、视频慢**：低维动作通常只需要少量 denoising step，高维视频为了画质和一致性需要更多 step，二者天然存在推理节奏差异。
-- **统一模型容易变重**：如果直接把 depth 作为额外 token 加进视频序列，attention 成本会显著上升；如果直接拼到 channel，又会破坏预训练视频模型的输入分布。
+- **机器人需要同时“行动”和“想象”**：policy 只输出动作不够，world model 只生成未来视频也不够；真正可用的 embodied model 需要同时预测可执行动作和未来世界状态。
+- **2D 未来帧缺少几何约束**：已有统一 WAM 多停留在 RGB pixel-space，能生成未来图像，却难以保证 depth、多视角一致性和 3D 空间结构。
+- **动作实时性与视频质量天然冲突**：动作是低维控制信号，通常少量 denoising step 就够；视频是高维信号，需要更多 step 才能保持清晰和时序一致。
 
 > 关键判断：X-WAM 的目标不是单纯提升视频生成质量，而是把“可执行动作 + 未来视频 + 深度 + 4D 重建”统一成一个可部署的机器人世界模型。
 
 ### 传统方案局限
 
-- **VLA / Policy Model**：控制链路短、动作输出直接，但通常缺少对未来世界动态和几何结构的显式想象。
-- **2D WAM / Video World Model**：能联合预测未来视频和动作，却主要停留在 RGB 像素空间，难以保证多视角深度和 3D 几何一致性。
-- **朴素 3D 融合方案**：sequence concatenation 会显著增加 attention 开销，channel concatenation 又会偏离预训练视频模型的输入分布。
-- **独立噪声采样**：训练时独立采样 action/video timestep，会产生推理阶段不会出现的 `t_O < t_a` 状态，削弱异步去噪效果。
+- **VLA / Policy Model**：控制链路短，但主要学习 observation-to-action 映射，缺少对未来物理演化、遮挡变化和空间接触关系的显式建模。
+- **2D WAM / Video World Model**：能够利用视频先验预测未来观测和动作，但空间信息被隐含在 RGB 中，无法稳定支持几何精确的 4D reconstruction。
+- **朴素 RGB-D 融合**：把 depth 拼成额外 token 会扩大序列长度并增加 attention 成本；把 depth 拼到 channel 又会偏离预训练视频模型熟悉的分布。
+- **独立 timestep 采样**：训练时独立采样 action/video 噪声会产生推理阶段不会出现的 `t_O < t_a` 状态，导致异步推理时视频分支处在未训练好的条件分布中。
 
 > 关键判断：传统方案的问题不只是“没有 3D”，还包括 3D 融合太重、动作被视频生成拖慢，以及训练噪声分布与异步推理状态不一致。
 
 ## 研究动机
 
-X-WAM 想解决的是一个统一建模问题：机器人不只需要“知道下一步怎么动”，也需要理解动作会如何改变三维世界。对于长程、精细、双臂或多视角操作，动作成功与否往往取决于几何关系、接触状态和空间一致性，而这些信息很难只靠 2D RGB 未来帧隐式学出来。
+X-WAM 想解决的是一个统一建模问题：机器人不只需要知道下一步怎么动，也需要理解动作会如何改变三维世界。对于长程、精细、双臂或多视角操作，动作成功与否往往取决于物体深度、接触关系、手眼相对位姿和多视角空间一致性，这些信息很难只靠 2D RGB 未来帧隐式学出来。
 
-因此，论文希望利用预训练视频扩散模型的视觉先验，同时补上两个能力：一是显式预测 depth，使模型能生成未来 RGB-D 并支持 4D 重建；二是让动作分支先完成去噪并立即执行，使 unified world model 不因为追求视频质量而失去实时控制能力。
+论文的核心动机是：既然大规模视频扩散模型已经具备强视觉先验，那么是否可以在不破坏这些先验的前提下，为其补上 3D 空间监督和实时动作解码能力？X-WAM 的回答是，将 depth 预测做成轻量分支，并把 action/video 的 denoising 节奏显式拆开：动作先可执行，视频继续生成，二者仍处在同一个统一模型中。
 
 > 关键判断：X-WAM 的动机不是把视频模型简单搬到机器人上，而是让视频先验、空间监督和实时动作解码在一个框架里协同。
 
 ## 方法论（主要模块简介）
 
-- **Unified 4D World Action Model**：以预训练视频 Diffusion Transformer 为主干，把多视角 RGB、机器人状态、动作 token 和语言指令放入同一序列，联合预测未来 RGB video、depth video、状态和动作。
-- **Lightweight Depth Adaptation**：复制主干最后若干 DiT blocks 形成 depth branch；深度分支通过 unilateral attention 读取主分支特征，但主分支不被深度分支反向扰动。
+- **Unified 4D World Action Model**：以预训练视频 Diffusion Transformer 为主干，把多视角 RGB、机器人状态、动作 token 和语言指令放入同一序列，联合预测未来 RGB video、depth video、proprioceptive state 和 robot action。
+- **Lightweight Depth Adaptation**：复制主干最后若干 DiT blocks 形成 depth branch；深度分支通过 unilateral attention 读取主分支特征，但主分支不读取 depth branch，从而保留预训练视频先验。
 - **Asynchronous Noise Sampling**：推理时动作只用较少 step 快速去噪并立即执行，视频继续完成更多 step；训练时用联合噪声采样保证 `t_O >= t_a`，让训练分布贴近异步推理分布。
-- **Large-scale pretraining + benchmark fine-tuning**：在超过 5,800 小时机器人数据上预训练，再针对 RoboCasa、RoboTwin 2.0 和真实耳机收纳任务进行微调与部署。
+- **4D reconstruction and deployment loop**：模型输出的多视角 RGB-D 可进一步融合成点云/4D world representation，同时 action chunk 可以结合 Real-Time Chunking 接入真实机器人执行。
 
 > 关键判断：这篇论文最有价值的设计，是把“4D 空间建模”和“动作实时性”同时纳入模型结构与噪声采样策略，而不是只在单一指标上做优化。
 
