@@ -216,9 +216,14 @@ body:has(.side-drawer.is-open) .drawer-backdrop {
 .hero {
   position: relative;
   display: block;
-  min-height: auto;
-  padding: 0 0 44px;
+  width: min(1180px, 92vw);
+  margin: 18px auto 38px;
+  padding: 0;
   overflow: hidden;
+  border: 1px solid rgba(210, 210, 215, 0.72);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow: var(--shadow);
 }
 
 .hero::before,
@@ -229,10 +234,10 @@ body:has(.side-drawer.is-open) .drawer-backdrop {
 .hero img {
   display: block;
   width: 100%;
-  aspect-ratio: 1717 / 916;
-  margin: 0 auto;
-  border-radius: 0;
+  height: clamp(210px, 26vw, 360px);
+  border-radius: 28px;
   object-fit: cover;
+  object-position: center;
 }
 
 .kicker {
@@ -276,11 +281,26 @@ h3 {
 }
 
 .hero-controls {
+  position: absolute;
+  right: 20px;
+  bottom: 18px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 14px;
-  margin-top: 20px;
+  margin-top: 0;
+}
+
+body.is-reading-post .hero,
+body.is-reading-post .home-summary,
+body.is-reading-post .feature-strip,
+body.is-reading-post .workspace,
+body.is-reading-post .bottom-board {
+  display: none;
+}
+
+body.is-reading-post .reader-page {
+  padding-top: 34px;
 }
 
 .home-summary {
@@ -1186,16 +1206,19 @@ h3 {
   }
 
   .hero {
-    min-height: auto;
-    padding-top: 0;
+    width: min(94vw, 100%);
+    margin-top: 10px;
+    border-radius: 20px;
   }
 
   .hero img {
-    aspect-ratio: 4 / 3;
+    height: 170px;
+    border-radius: 20px;
   }
 
   .hero-controls {
-    margin-top: 18px;
+    position: static;
+    padding: 12px 12px 14px;
   }
 
   .feature-strip,

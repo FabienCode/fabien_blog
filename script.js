@@ -427,17 +427,24 @@ function render() {
   renderDrawer();
 }
 
+function setReadingMode(isReading) {
+  document.body.classList.toggle("is-reading-post", isReading);
+}
+
 function openPost(id) {
   activePostId = id;
   recordPostView(id);
   render();
   readerPage.classList.remove("is-hidden");
+  editorSection.classList.add("is-hidden");
+  setReadingMode(true);
   window.location.hash = `post-${id}`;
-  readerPage.scrollIntoView({ behavior: "smooth" });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function closeReader() {
   readerPage.classList.add("is-hidden");
+  setReadingMode(false);
   if (window.location.hash.startsWith("#post-")) {
     history.pushState("", document.title, window.location.pathname + window.location.search);
   }
@@ -447,17 +454,24 @@ function closeReader() {
 function syncReaderRoute() {
   const hash = decodeURIComponent(window.location.hash);
   if (!hash.startsWith("#post-")) {
+    readerPage.classList.add("is-hidden");
+    setReadingMode(false);
     return;
   }
 
   const id = hash.replace("#post-", "");
   if (posts.some((post) => post.id === id)) {
     activePostId = id;
+    renderReader();
     readerPage.classList.remove("is-hidden");
+    editorSection.classList.add("is-hidden");
+    setReadingMode(true);
   }
 }
 
 function openEditor() {
+  readerPage.classList.add("is-hidden");
+  setReadingMode(false);
   editorSection.classList.remove("is-hidden");
   editorSection.scrollIntoView({ behavior: "smooth" });
 }
@@ -821,6 +835,8 @@ sideDrawer.addEventListener("click", (event) => {
     activeTag = "全部";
     closeSideNav();
     render();
+    readerPage.classList.add("is-hidden");
+    setReadingMode(false);
     document.querySelector("#library").scrollIntoView({ behavior: "smooth" });
   }
 
@@ -831,6 +847,8 @@ sideDrawer.addEventListener("click", (event) => {
     activeTag = tag;
     closeSideNav();
     render();
+    readerPage.classList.add("is-hidden");
+    setReadingMode(false);
     document.querySelector("#library").scrollIntoView({ behavior: "smooth" });
   }
 
@@ -852,6 +870,7 @@ readerTags.addEventListener("click", (event) => {
   activePostId = first?.id || activePostId;
   render();
   readerPage.classList.add("is-hidden");
+  setReadingMode(false);
   document.querySelector("#library").scrollIntoView({ behavior: "smooth" });
 });
 
@@ -888,6 +907,7 @@ footerTags.addEventListener("click", (event) => {
   activePostId = post.id;
   render();
   readerPage.classList.add("is-hidden");
+  setReadingMode(false);
   document.querySelector("#library").scrollIntoView({ behavior: "smooth" });
 });
 
