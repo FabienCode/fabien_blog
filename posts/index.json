@@ -1,5 +1,23 @@
 [
   {
+    "id": "hyworld2-paper-note",
+    "title": "HY-World 2.0 论文解析：面向 3D 世界重建、生成与仿真的一致多模态世界模型",
+    "category": "论文",
+    "tags": [
+      "World Model",
+      "3DGS",
+      "多模态",
+      "世界模型",
+      "3D重建",
+      "计算机图形学",
+      "Tencent",
+      "论文精读"
+    ],
+    "date": "2026-05-14",
+    "excerpt": "HY-World 2.0 是首个将世界生成（文本/单图→3DGS）与世界重建（多视角→3D结构）统一在离线3D世界模型范式下的开源框架，通过四阶段管线（HY-Pano 2.0→WorldNav→WorldStereo 2.0→WorldMirror 2.0）实现高保真可导航3D场景合成，结果可比肩闭源的 Marble。",
+    "file": "hyworld2-paper-note.md"
+  },
+  {
     "id": "rubricem-paper-note",
     "title": "RubricEM 论文解析：用 Rubric 引导策略分解超越可验证奖励的 Meta-RL 框架",
     "category": "论文",
