@@ -1,5 +1,22 @@
 [
   {
+    "id": "causalforcing2-paper-note",
+    "title": "Causal Forcing++ 论文解析：面向实时交互视频生成的 Scalable Few-Step AR Diffusion 蒸馏",
+    "category": "论文",
+    "tags": [
+      "视频生成",
+      "Diffusion",
+      "AR Model",
+      "Distillation",
+      "World Model",
+      "实时生成",
+      "论文精读"
+    ],
+    "date": "2026-05-15",
+    "excerpt": "Causal Forcing++ 用 causal consistency distillation（causal CD）替代昂贵的 causal ODE 初始化，实现了与 causal ODE 相同的正确学习目标但效率提升 4 倍、延迟降低 50%，在 frame-wise 2-step 设置下达到 VBench Total 84.14 的同时将首帧延迟从 0.60s 降至 0.27s。",
+    "file": "causalforcing2-paper-note.md"
+  },
+  {
     "id": "hyworld2-paper-note",
     "title": "HY-World 2.0 论文解析：面向 3D 世界重建、生成与仿真的一致多模态世界模型",
     "category": "论文",
