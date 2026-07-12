@@ -1,5 +1,22 @@
 [
   {
+    "id": "megascale-data-paper-note",
+    "title": "MegaScale-Data 论文解析：当 DataLoader 成为 4096 GPU 训练的数据控制面",
+    "category": "论文",
+    "tags": [
+      "AI Infra",
+      "DataLoader",
+      "Distributed Training",
+      "Multimodal Training",
+      "ML Systems",
+      "EuroSys",
+      "论文精读"
+    ],
+    "date": "2026-07-12",
+    "excerpt": "MegaScale-Data 将大模型训练中的 DataLoader 从 rank-local 组件升级为分布式数据控制面，通过 Source Loader、Data Constructor、Planner、DGraph 和 ClientPlaceTree 统一解决多源数据冗余、混合并行重复加载和负载不均问题，在最多 4096 GPU 上带来最高 4.5× 训练吞吐提升与 13.5× CPU 内存降低。",
+    "file": "megascale-data-paper-note.md"
+  },
+  {
     "id": "causalforcing2-paper-note",
     "title": "Causal Forcing++ 论文解析：面向实时交互视频生成的 Scalable Few-Step AR Diffusion 蒸馏",
     "category": "论文",
