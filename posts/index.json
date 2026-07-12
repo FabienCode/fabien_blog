@@ -1,5 +1,22 @@
 [
   {
+    "id": "stalloc-paper-note",
+    "title": "STAlloc 论文解析：用张量生命周期规划 GPU 显存，而不是等碎片发生",
+    "category": "论文",
+    "tags": [
+      "AI Infra",
+      "GPU Memory",
+      "Distributed Training",
+      "Memory Allocator",
+      "PyTorch",
+      "EuroSys",
+      "论文精读"
+    ],
+    "date": "2026-07-12",
+    "excerpt": "STAlloc 将大模型训练中的 GPU 显存分配从纯在线 best-fit 改为 spatio-temporal planning，通过 Allocation Profiler、Plan Synthesizer 和 Runtime Allocator 利用张量生命周期重复性，平均减少 85.1% 碎片显存，并让原本 OOM 的高吞吐训练配置可运行。",
+    "file": "stalloc-paper-note.md"
+  },
+  {
     "id": "megascale-data-paper-note",
     "title": "MegaScale-Data 论文解析：当 DataLoader 成为 4096 GPU 训练的数据控制面",
     "category": "论文",
